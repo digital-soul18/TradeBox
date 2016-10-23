@@ -203,11 +203,8 @@ void TPLinesMoved()
             double tpprice=NormalizeDouble(ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
             if(tpprice!=OrderTakeProfit() && StringFind(OrderComment(),"T01_")!=-1)
             {
-               printf("Point0");
                ModifyProfitTarget(OrderTicket(),tpprice,OrderStopLoss());
             }    
-            //if(StringFind(OrderComment(),"T02_")!=-1)
-            //{
                double tpprice2=NormalizeDouble(ObjectGet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
                if(tpprice2!=OrderTakeProfit() && StringFind(OrderComment(),"T02_")!=-1)
                {
@@ -220,10 +217,6 @@ void TPLinesMoved()
                   printf("Point2-1");
                   ModifyProfitTarget(OrderTicket(),OrderTakeProfit(),slprice2);
                }  
-               printf("tpprice2-"+tpprice2+"  tpprice-"+tpprice+"  slprice2-"+slprice2+"  orderticket-"+OrderTicket());
-               //printf("tpprice2",tpprice2," tpprice-",tpprice," slprice2-",slprice2);  
-               //Comment("tpprice-",tpprice," tpprice2-",tpprice2," slprice2-",slprice2," OrderTicket()",OrderTicket()," OrderMagicnumber",OrderMagicNumber()," OrderTakeprofit",OrderTakeProfit()," OrderStopLoss()",OrderStopLoss());
-            //}
          }
       }
    }
@@ -240,13 +233,14 @@ void BoxMoved()
          {
             string str1=StringSubstr(OrderComment(),0,StringFind(OrderComment(),"_"+TradeCode));
             string str2=StringSubstr(str1,StringFind(str1,"_")+1);
-            double price1=GetRectPrice(str2,OBJPROP_PRICE1);      
-            double price2=GetRectPrice(str2,OBJPROP_PRICE2); 
+            double price1=NormalizeDouble(GetRectPrice(str2,OBJPROP_PRICE1),Digits);      
+            double price2=NormalizeDouble(GetRectPrice(str2,OBJPROP_PRICE2),Digits); 
             double upperline=MathMax(price1,price2);
             double lowerline=MathMin(price1,price2);
             datetime time1=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME1)));      
             datetime time2=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME2))); 
             int ret=0;
+            //Print("ModifyOrder Sent - OrderOpenPrice()"+OrderOpenPrice()+" lowerline"+lowerline+" OrderStopLoss()"+OrderStopLoss()+" upperline"+upperline);
             if(StringFind(OrderComment(),"T01_")!=-1)
             {
                if(OrderType()==OP_BUYLIMIT && Bid>upperline)
@@ -272,6 +266,7 @@ void BoxMoved()
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+upperline-lowerline+upperline-lowerline);
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                        /* This part makes the TP line move when the box is moved but then its also inflexible to move if we do this
                         /* move once then leave it needed
                         ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline+upperline-lowerline+upperline-lowerline);
                         ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+upperline-lowerline+upperline-lowerline);
@@ -304,6 +299,7 @@ void BoxMoved()
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,lowerline-(upperline-lowerline)-(upperline-lowerline));
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                        /* This part makes the TP line move when the box is moved but then its also inflexible to move if we do this
                         /*  move once then leave it needed maybe leave for 5 seconds and then do it once.
                         ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline-upperline-lowerline-upperline-lowerline);
                         ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline-upperline-lowerline-upperline-lowerline);
@@ -422,6 +418,7 @@ void OnTick()
    int openticket2=0;
    double openprice1=0;
    double openprice2=0;
+   double stoploss2=0;
    double stop=0;
 
 
@@ -466,21 +463,24 @@ void OnTick()
                lowerline=MathMin(price1,price2);
                frontline=MathMax(time1,time2);
                backline=MathMin(time1,time2);
+               
+               int cmd=-1;
+               if(Bid>upperline) 
+               {                   
+                  cmd=OP_BUYLIMIT; openprice1=upperline; 
+                  sl=lowerline; stop=(openprice1-sl)/myPoint; 
+                  tp=setTP(openprice1,2*stop);
+               }
+               else if(Bid<lowerline) 
+               { 
+                  cmd=OP_SELLLIMIT; openprice1=lowerline; 
+                  sl=upperline; stop=(sl-openprice1)/myPoint; 
+                  tp=setTP(openprice1,-2*stop);
+               } 
+                            
+
                if(isAlreadyEnter("_"+strname+"_")==false && TimeCurrent()<=frontline)
                {
-                  int cmd=-1;
-                  if(Bid>upperline) 
-                  { 
-                     cmd=OP_BUYLIMIT; openprice1=upperline; 
-                     sl=lowerline; stop=(openprice1-sl)/myPoint; 
-                     tp=setTP(openprice1,2*stop);
-                  }
-                  else if(Bid<lowerline) 
-                  { 
-                     cmd=OP_SELLLIMIT; openprice1=lowerline; 
-                     sl=upperline; stop=(sl-openprice1)/myPoint; 
-                     tp=setTP(openprice1,-2*stop);
-                  } 
                   if(StringFind(strlots,"%")!=-1)
                   {
                      double percent=StrToDouble(StringSubstr(strlots,0,StringFind(strlots,"%")));
@@ -497,10 +497,19 @@ void OnTick()
 
                   if(strlots != "") openticket1=Open_Trade(Symbol(),cmd,openprice1, my_lots,sl, tp, "T01_"+strname+"_"+TradeCode);                  
                   
+                  if(ObjectFind("vTP1_"+strname)==-1 && openticket1==0){
+                     DrawTL("vTP1_"+strname,tp,backline,tp,frontline,clrYellow,STYLE_DASH,1);
+                  }
+                  
                   if(openticket1>0)
                   {
                      if(cmd==OP_BUYLIMIT) Alert("BUY LIMIT "+ Symbol()+ " " + strtf(Period()) + " Date & Time: " + TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES) + " - " + WindowExpertName());
                      else if(cmd==OP_SELLLIMIT) Alert("SELL LIMIT "+ Symbol()+ " " + strtf(Period()) + " Date & Time: " + TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES) + " - " + WindowExpertName());
+                     //TODO - Capture the time and price of the vTP1_strname and make it the value for vTP1_+IntegerToString(openticket1)
+                     if(ObjectFind("vTP1_"+strname)!=-1){
+                        ObjectDelete("vTP1_"+strname); 
+                      } 
+
                      DrawTL("vTP1_"+IntegerToString(openticket1),tp,backline,tp,frontline,clrYellow,STYLE_SOLID,2);
                      if(allowed_2nd_trade)
                      {
@@ -508,14 +517,16 @@ void OnTick()
                         if(cmd==OP_BUYLIMIT)
                         {
                            openprice2=openprice1+(stop*myPoint);
+                           stoploss2=openprice1-(0.5*stop*myPoint);
                         }
                         else if(cmd==OP_SELLLIMIT)
                         {
                            openprice2=openprice1-(stop*myPoint);
+                           stoploss2=openprice1+(0.5*stop*myPoint);
                         }
                         DrawTL("vOP2_"+IntegerToString(openticket1),openprice2,backline,openprice2,frontline,clrGreen,STYLE_SOLID,1);
                         DrawTL("vvOP2_"+IntegerToString(openticket1),openprice2,backline,openprice2,frontline,clrNONE,STYLE_SOLID,1);
-                        DrawTL("vSL2_"+IntegerToString(openticket1),openprice1,backline,openprice1,frontline,clrGray,STYLE_SOLID,1);
+                        DrawTL("vSL2_"+IntegerToString(openticket1),stoploss2,backline,stoploss2,frontline,clrYellow,STYLE_SOLID,3);
                         DrawTL("vTP2_"+IntegerToString(openticket1),tp,backline,tp,frontline,clrYellow,STYLE_SOLID,2);
                      }
                   }

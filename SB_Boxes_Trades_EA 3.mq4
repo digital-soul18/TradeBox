@@ -1300,7 +1300,7 @@ void OnTick()
             DrawTL("blueBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrBlue,STYLE_DASH,1);
 
            }
-         printf(TargetBoxName);
+         
          // Loop through objects again to find TargetBoxName
          for(int j=ObjectsTotal()-1; j>=0; j--)
            {

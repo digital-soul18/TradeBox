@@ -6,7 +6,13 @@
 
 
 
-/*
+/* Instructions to load -
+- Copy comment.mqh , common.mqh, json.mqh, Telegram.mqh to /includes directory
+- Copy II_SupDemMOD_DarkBG_SolidFill_Sow.mql4 to /indicator directory
+- Setup bot on Telegram by watching the video Telegram Setup Video.mp4
+- Put the API key into this EA
+- Goto Tool > Option > Exper Advisor in MT4 and ensure 'Allow automated trading' is ticked.
+- Under 'Allow webrequest for listed URL' add in the following 'https://api.telegram.com' and 'https://api.telegram.org'
 
 Instructions and notes -
 - When you set this up for the first time on a single currency across multiple time frames then you need to ensure that each chart has its own Magic number.
@@ -17,31 +23,91 @@ You meed to manutally insert the magic number which is unique to that chart. Oth
 
 Updates required in order of priority -
 
-DONE - Once a second trade has gone to TP, the first one needs to move to break even. Right now its not.
- - Make the trade have its own SL lines rather then disable the box.
+TODO - Set the state off the buttons off the globalvariables if set on the OnInit() fucntion
+GOLIVE - Exotic currencies / instruments are not working.
+BUG - If second order is disabled then all orders go fucked up and do not work. Needs a deep review of why this happens. Some logic missing to ignore if second trade is live.
+BUG - You can turn the indicators off but you can't turn them back on.
+BUG - Stop creating a folder everytime we want to take screenshot
+BUG - Need a new line for the SL of TP1 to be moveable once the trade has been entered
+BUG - If second trade is entered and SL1 and SL2 go to BE but then if I move the location of the SL lower then evertime price crosses the entry price of 2nd trade then it moves SL1 and SL2 to BE again.
+FEATURE - Rewrite whole EA into MT5
+FEATURE - The InfoBox should move a bit higher when selling so that its a bit easier to read.
+FEATURE - Once price comes into the box and rebounds then detect a low. Put the SL1 and SL2 into the low of that price rather then directly to the BE point.
+FEATURE - Take screenshots of HTF - W,D,4H,1H everytime before taking a trade
+FEATURE - Get the mobile notifications going
+FEATURE - Send screenshots notifications to the mobile
+FEATURE - Show trade history. Once trade is closed then show a line connecting the start and end points.
+FEATURE - Record all new trades in a TEXT file and their history and show graphically on screen when adding the EA.
+FEATURE - Draw a box over large candles to trade their liqiudity gaps. Create a series of orders inside that box when you know that there will be a significant drop from a previously fast moving candle.
+FEATURE - Consider using a pennant/flag indicator on HTF to find squeezes.
+FEATURE - Restore our engulfing pattern detector and find out englufing patterns to exit from if they go against the trade.
+FEATURE - Upon confluence between the three levels - supply on all three timeframes then a judgement system must be in place. Judgement system has the last call to make on if to allow this trade to continue.
+BUG - Remove all the implicit conversion from number to string and possible loss of data due to type conversion.
+ - Would be good to put in the InfoBox which was a winning trade and losing.
+ - When a trade wins/loses sometimes the TP line remains as solid...
+- If the box runs out then an alarm should go off.
+- Prevent Margin Call...?
+- Need to cater for spread as it makes a big impact on the trade.
+ - Add in rules for how to handle TP to BE if second trade not enabled.
+ALREADY DONE? - Investigate and codify best methods to manage trading risk.
  - If the trade disables second trade code the logic so that it puts the SL to BE halfway point.
- - Once trade is entered then need to take screenshot of the trade.
- - Consider using a pennant/flag indicator on HTF to find squeezes.
- - Should we allow the second trade stop loss to be adjustable for percentage of first trade's entry and stop loss (lines 802) ie. I want to enter my second trade stop loss as 50% between the first trades trade entry and stop loss.
- - Upon confluence between the three levels - supply on all three timeframes then a judgement system must be in place
- - Judgement system has the last call to make on if to allow this trade to continue.
+GOLIVE - Should we allow the second trade stop loss to be adjustable for percentage of first trade's entry and stop loss (lines 802) ie. I want to enter my second trade stop loss as 50% between the first trades trade entry and stop loss.
+
  - If price is approaching the 'buffer zone' of the pending order then we must check the next high TF level and see how far away that is (use the supcount)
  - For example, if it is still 2:1 risk to reward ratio then its worth retaining the order
  - If not, we need to delete the order. Otherwise retain the order.
  - Retained order must readjust the TP price to closest SD level.
+ - Make the trade have its own SL lines rather then disable the box. [Need good reasons for this.]
 DONE - Must improve the look of the levels - 1H levels to be long dashes with no fill
 DONE - The text of 'H1' should show further away
 CANCELLED - Need historical view of levels in indicator
 DONE - Multi time frame SD levels - 1H,15M,1M
 DONE - Add in 1M SD levels
+CANCELLED - Consider using a pennant/flag indicator on HTF to find squeezes. (Need to find another way to implement this)
+DONE - Once a second trade has gone to TP, the first one needs to move to break even. Right now its not.
+DONE - Once trade is entered then need to take screenshot of the trade.
+DONE - But a button to disable all the charts on the screen for better visibility.
+CANCELLED - Support pure dollar size risk. ie. Risk $50 on a trade. - Not doing this as it will make it more around the money win and loss and in the long run this is bad for trading psychology especially when more money is on the line.
+DONE - Need a floating text that reminds me of trading rules
+DONE - Right now its taking a screenshot for every tick cycle which needs to be fixed.
+DONE - If I have an order in and then readjust the entry sqaure then the TP does not readjust properly. Can't figure out which is the TP (Yellow or Green)
+DONE - Once trade is entered then create a new folder and then take screenshots for entry, trade modificationd and close. Also change folder name once trade is closed.BUG
+DONE - IF trade is entered and then the indicator crashes then there is no new box to replace it
+DONE - Need screenshot upon trade being filled. Maybe ideally around trade entry.
+DONE - Once trade filled both TP lines should NOT be Yellow! They should be different colour to make it easy to differentiate
+DONE - Once trade is complete the box length should resize such that the end of the box should be where the trade ended otherwise there are alot of boxes on the screen after a day trade.
+DONE - Moving the second trade entry line doesn't update the trade
+ALREADY DONE? - Once trade is entered and then the box goes
+DONE - Need to remove buttons and labels if removing the chart
+DONE - Turning indicator back online doesn't bring it back on the charts.
+DONE - If MT4 is closed then this EA will not take over existing orders because it will lose its Magic ID from setting into the global variable.
+DONE - If you put a box in then inert the lots into the box THEN change the height of the box the yellow TP does not follow.
+DONE - If you open more then one chart with this EA on it then it will remove your trade. Need to figure out how to prevent this from happening.
+DONE - Need to setup a checker for all other EA's and their magic number. If another Magic number exsits that is the same then notice needs to be given.
+DONE - If a box is changed around then the info box does not update.
+CANT REPRODUCE - When Second order hits TP then original box goes blue. This is not right. [Tested in Strategy tester and it doesn't happen]
+CANT REPRODUCE - When a second order is entered there are like three or four changes to the TP/SL which is weird. [Tested in Strategy tester and seems to work fine. Can't repo]
+DONE - Buy orders are all fucked.
+DONE - when doing market order, the calculation of TP2, SL2 are not correct.
+DONE - When trading AUDUSD the second trade auto closes a few moments after but the first trade remains. When trading EUDUSD the second trade stay on and doesn't close upon opening. This was caused because there were two AUDUSD screens open and the magic number was shared between the two. Need to find a way that the magic number isn't shared between pairs.
+DONE - When market order taken then the logs fill with errors. Not sure why.
+DONE - If a order is entered at market execution then the box should take over and assign the TP and SL - Draw red box then if price is inside the red box then the TP should update. Create a button on the box to enter the trade.
+DONE - When box is above the entry price and TP is also above the entry price it considers that a sell order still.
+DONE - Infobox is now deleted upon trade entry
+IGNORED - When market order is created and finished then the blue box draws backwards. Not sure why
+    - I think this is if the time of the trade is not within the box dimensions.
+DONE - When market order is taken but the trade is closed manually then the lines for the TP2 and the middle lines still remain.
+DONE - Upon trade closure infobox should display the correct amount of TP/SL and RvR for chart history.
+DONE - ASX200 - Even if I put 0.01 as the lot size it replaces that with 1 lot size order with no errors.
+DONE - AXS200 doesn't work for trade management. Box goes huge.
+DONE - Changing TF when current pending order is in place triggers the EA to create a rescue box
 
+Two strategies -
+- Trade on 3:1 RvR
+- Trade on compression zones
+- Trade grid style on liquaity gaps. 
+- Hunt for large candles with low volume behind them on their reversal
 
-Defect Log -
-- When a second order is entered there are like three or four changes to the TP/SL which is weird.
-- Remove all the implicit conversion from number to string and possible loss of data due to type conversion.
-- If you open more then one chart with this EA on it then it will remove your trade. Need to figure out how to prevent this from happening.
-  Need to setup a checker for all other EA's and their magic number. If another Magic number exsits that is the same then notice needs to be given.
-- If you put a box in then inert the lots into the box THEN change the height of the box the yellow TP does not follow.
 
 
 //Next feature -
@@ -53,7 +119,6 @@ Defect Log -
 //Obtain the chart's current bar positioning, using the "ChartGetInteger()" function and the properties CHART_FIRST_VISIBLE_BAR and CHART_VISIBLE_BARS.
 //Calculate the required bar positioning offset and then use the function "ChartNavigate()" to position the chart according to your requirements.
 
-//Test date - 15/09/2019 EURUSD
 
 
 */
@@ -61,20 +126,36 @@ Defect Log -
 
 #include <stdlib.mqh>
 //#include <debug_inc.mqh>
+#include <Telegram.mqh>
+CCustomBot bot;
 
-
-#property copyright "Copyright 2016"
+#property copyright "Copyright Sow Behl 2020"
 #property link      ""
 #property version   "1.00"
 #property strict
-#include <WinUser32.mqh>
-#include <stderror.mqh>
-#include <stdlib.mqh>
-#include <stdlib.mqh>
+
+//+------------------------------------------------------------------+
+//|                   Trade Rules                                    |
+//+------------------------------------------------------------------+
+
+
+string Rule1 = "- If not right, leave it. There will always be another trade.";
+string Rule2 = "- You don't need to control the market. 50% win is good enough.";
+string Rule3 = "- Don't marry one side of the trade.";
+string Rule4 = "- If you miss a trade, dont worry. There will always be another.";
+string Rule5 = "- Video each trade.";
+string Rule6 = "- Trust the system in the long run.";
+string Rule7 = "- Don't enter highly correlated trades. You can lose double.";
+string Rule8 = "- Expenses are inevitable. Just make them manageable.";
+//Cancel all 1M trades when London opens
+//Leave sufficient room for spread in SL and TP
+//Opening Asian session and closing are the highest trend setters.
+//Between
+
 
 extern bool    allowed_2nd_trade=true;
 extern color   activate_colour=clrRed;
-extern int     magic_number=929161;
+//extern int     magic_number=929161;  //taken this out so that its autogenerated
 extern int     slippage = 5;   //Allowed slippage of open/close order
 extern int     bar1size = 5;   // local variable required to avoid a flat market
 //extern int     minZoneThickness = 10; // local variable required to avoid a flat market
@@ -88,12 +169,18 @@ extern color   firstPenetrationDemandLevelColour              = clrAqua;
 extern color   secondPenetrationDemandLevelColour             = clrAqua;
 extern color   thirdPenetrationDemandLevelColour              = clrAqua;
 extern color   whoredOutDemandLevelColour                     = C'142,37,52';
-extern int     firstPenetrationsMaxCandles=5;        //The number of candles that penetrate a level before the level's 'freshness'.
-extern int     secondPenetrationsMaxCandles             = 10;        //The number of candles that penetrate a level before the level's 'freshness'.
-extern int     thirdPenetrationsMaxCandles              = 10;        //The number of candles that penetrate a level before the level's 'freshness'.
-extern int     whoredOutMaxCandles                      = 10;        //The number of candles that penetrate a level before the level's 'freshness'.
-extern int     maxPenetrationToExpireLevel              = 3;         //The max number of full candle penetrations before level is expired.
+extern int     firstPenetrationsMaxCandles                    =5;          //The number of candles that penetrate a level before the level's 'freshness'.
+extern int     secondPenetrationsMaxCandles                   = 10;        //The number of candles that penetrate a level before the level's 'freshness'.
+extern int     thirdPenetrationsMaxCandles                    = 10;        //The number of candles that penetrate a level before the level's 'freshness'.
+extern int     whoredOutMaxCandles                            = 10;        //The number of candles that penetrate a level before the level's 'freshness'.
+extern int     maxPenetrationToExpireLevel                    = 3;         //The max number of full candle penetrations before level is expired.
+extern int     magic_number                                   = 0;
+extern string  logfile                                        ="trade.csv";
 
+sinput string   t_tlg = "TELEGRAM";  // ================================
+sinput string            InpToken="5253416211:AAHq3YF1wTfV0k2DC0TMTR9TeM23ShVRmY0";//Token
+sinput ulong channeltlg =-727963640; //Telegram group code
+sinput int differenceinsecondforsendphot=60;//
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -102,6 +189,7 @@ double stop_loss=0;                       //Fixed stoploss in pips (0=no stoplos
 
 int timeframe=0;
 int number_retry_open_trade=10;
+//int magic_number;  /Disabling to test if magic_number can be removed so EA resumes trades upon closing
 
 double     myPoint,mySpread,myStopLevel,myTickValue,myTickSize,myLotValue;
 double       myDigits;
@@ -123,18 +211,28 @@ double last_history_check;
 string TradeCode="SB00";
 
 //Variables to define screenshot width and height
-#define Screenshot_Width 1024
-#define Screenshot_Height 768
+#define Screenshot_Width 1920
+#define Screenshot_Height 1280
 
 int err;
 string strsuffix;
 double ratio=1000000,CurrentSupDem,H1SupDem,M15SupDem,H4SupDem;
+
+string magic_id;
+
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 int OnInit()
   {
-//---
+  
+  
+  if (!FileIsExist(logfile))
+  {
+   WriteHeader();  
+  }
+  
+   bot.Token(InpToken);
    SetPoint();
    if(Digits==3 || Digits==5)
       slippage*=10;
@@ -149,19 +247,523 @@ int OnInit()
    DemandLevelCounter = 1;
    strsuffix="_"+Symbol()+IntegerToString(Period())+"_"+TradeCode+"_"+IntegerToString(magic_number);
 //---
-//--- enable object create events
-   ChartSetInteger(ChartID(),CHART_EVENT_OBJECT_CREATE,true);
-//--- enable object delete events
-   ChartSetInteger(ChartID(),CHART_EVENT_OBJECT_DELETE,true);
-//--- Remove grid
-   ChartSetInteger(ChartID(),CHART_SHOW_GRID,0,false);
-//--Chart should be candlesticks
-   ChartSetInteger(ChartID(),CHART_MODE,0,CHART_CANDLES);
-//--Chart to set shift
-   ChartSetInteger(ChartID(),CHART_SHIFT,0,true);
-//--Chart scale
-   ChartSetInteger(ChartID(),CHART_SCALE,0,2);
 
+//--- Put each magic number in the global variables so as not to clash with other EA's
+// Disabling magic_number feature so EA can resume orders that have closed
+// Unique sting id.
+   magic_id = WindowExpertName() + Symbol();
+
+// If there isn't already a Global Variable with the id in wich search for the MagicNumber create it
+   if(!GlobalVariableCheck(magic_id) || GlobalVariableGet(magic_id)==0)
+     {
+      GlobalVariableSet(magic_id,magic_number);
+     }
+   else // Just get the MagicNumber for the unique id
+     {
+      Alert(Symbol()+": You have a clash with another EA with same EA number. Remove that please or change your EA number.");
+     }
+
+//--------
+
+
+//----------- START - SET UP CHART FURNISHING -------------
+   SetTemplate(ChartID());
+//----------- END SET UP CHART FURNISHING -------------
+
+//----------- START SET UP CHART BUTTONS -------------
+//--- create the button
+//--- chart window size
+   long x_distance;
+   long y_distance;
+//--- set window size
+   if(!ChartGetInteger(0,CHART_WIDTH_IN_PIXELS,0,x_distance))
+     {
+      Print("Failed to get the chart width! Error code = ",ErrorDescription(GetLastError()));
+
+     }
+   if(!ChartGetInteger(0,CHART_HEIGHT_IN_PIXELS,0,y_distance))
+     {
+      Print("Failed to get the chart height! Error code = ",ErrorDescription(GetLastError()));
+
+     }
+
+   int x=(int)x_distance/32;
+   int y=(int)y_distance/32;
+
+
+   bool temp; //record temporary state of global varibles
+
+   if(ObjectFind(0,"Button-ShowLevels")==-1)
+     {
+      //Create button if it doesn't exist. If button can't be created then set an error
+      if(!ButtonCreate(0,"Button-ShowLevels",0,10,y+2,x+50,y+10,CORNER_LEFT_UPPER,"Indicators ON","Arial",10,
+                       clrWhite,clrNONE,clrNONE,false,true,false,true,0))
+        {
+         Print("Error creating Button");
+        }
+      //set the button to be the state of the global variable so that if the TF changes then at least the buttons will be in the same state as it once was.
+      if(GlobalVariableCheck(magic_id+"Button-ShowLevels")==true)
+        {
+         temp=GlobalVariableGet(magic_id+"Button-ShowLevels");
+         ObjectSetInteger(0,"Button-ShowLevels",OBJPROP_STATE,temp);
+        }
+      //ObjectSetInteger(0,"Button-ShowLevels",OBJPROP_STATE,Button_ShowLevels_State);
+
+     }
+
+   if(ObjectFind(0,"Button-EnableRules")==-1)
+     {
+      if(!ButtonCreate(0,"Button-EnableRules",0,125,y+2,x+30,y+10,CORNER_LEFT_UPPER,"Rules ON","Arial",10,
+                       clrWhite,clrNONE,clrNONE,false,true,false,true,0))
+        {
+         Print("Error creating Button");
+        }
+      if(GlobalVariableCheck(magic_id+"Button-EnableRules")==true)
+        {
+         temp=GlobalVariableGet(magic_id+"Button-EnableRules");
+         ObjectSetInteger(0,"Button-EnableRules",OBJPROP_STATE,temp);
+        }
+     }
+
+   if(ObjectFind(0,"Button-15M")==-1)
+     {
+      if(!ButtonCreate(0,"Button-15M",0,220,y+2,x-20,y+10,CORNER_LEFT_UPPER,"15M","Arial",10,
+                       clrWhite,clrNONE,clrNONE,false,true,false,true,0))
+        {
+         Print("Error creating Button");
+        }
+      if(GlobalVariableCheck(magic_id+"Button-15M")==true)
+        {
+         temp=GlobalVariableGet(magic_id+"Button-15M");
+         ObjectSetInteger(0,"Button-15M",OBJPROP_STATE,temp);
+        }
+     }
+
+   if(ObjectFind(0,"Button-H1")==-1)
+     {
+      if(!ButtonCreate(0,"Button-H1",0,266,y+2,x-20,y+10,CORNER_LEFT_UPPER,"H1","Arial",10,
+                       clrWhite,clrNONE,clrNONE,false,true,false,true,0))
+        {
+         Print("Error creating Button");
+        }
+      if(GlobalVariableCheck(magic_id+"Button-H1")==true)
+        {
+         temp=GlobalVariableGet(magic_id+"Button-H1");
+         ObjectSetInteger(0,"Button-H1",OBJPROP_STATE,temp);
+        }
+     }
+
+   if(ObjectFind(0,"Button-H4")==-1)
+     {
+      if(!ButtonCreate(0,"Button-H4",0,310,y+2,x-20,y+10,CORNER_LEFT_UPPER,"H4","Arial",10,
+                       clrWhite,clrNONE,clrNONE,false,true,false,true,0))
+        {
+         Print("Error creating Button");
+        }
+      if(GlobalVariableCheck(magic_id+"Button-H4")==true)
+        {
+         temp=GlobalVariableGet(magic_id+"Button-H4");
+         ObjectSetInteger(0,"Button-H4",OBJPROP_STATE,temp);
+        }
+     }
+
+   if(ObjectFind(0,"Button-D1")==-1)
+     {
+      if(!ButtonCreate(0,"Button-D1",0,355,y+2,x-20,y+10,CORNER_LEFT_UPPER,"D1","Arial",10,
+                       clrWhite,clrNONE,clrNONE,false,true,false,true,0))
+
+        {
+         Print("Error creating Button");
+        }
+      if(GlobalVariableCheck(magic_id+"Button-D1")==true)
+        {
+         temp=GlobalVariableGet(magic_id+"Button-D1");
+         ObjectSetInteger(0,"Button-D1",OBJPROP_STATE,temp);
+        }
+     }
+//----------- END SET UP CHART BUTTONS -------------
+
+//--------------- SETUP RULES ----------------------
+   DrawRulesOnScreen();
+//--------------- SETUP RULES ---------------------
+
+//----- If open orders found but without box then create them -------
+
+   int i;
+   for(i=OrdersTotal()-1; i>=0; i--)
+     {
+      if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES)==True)
+        {
+
+         //Check the order belongs to this Symbol but also check that the trade has 'T01_' this also avoids the pyramid trade from having to enter a box for that.
+         if(OrderSymbol()==Symbol() && StringFind(OrderComment(),"T01_")!=-1)
+           {
+            string str1=StringSubstr(OrderComment(),0,StringFind(OrderComment(),"_"+TradeCode));  //If the tradecode is found from the ordercomment then extract it's name without the "_SB002" trade code.
+            int replaced = StringReplace(str1,"T01_","");
+
+            //If Object can't be found with the same name as the found order comment for T01_Rectange ... then create a new rectangle with red box and the same name.
+            //Infobox should show up once the rectangle is drawn
+            if(ObjectFind(str1)==-1) // && ObjectFind(OrderComment())=-1)  //StringFind(OrderComment(),"_"+TradeCode)!=-1
+              {
+               Alert(Symbol()+ ": Trade without a related box found. Adding one in.");
+               if(RectangleCreate(0,str1,0,Time[10],OrderStopLoss(),Time[0]+5000,OrderOpenPrice(),activate_colour,0,1,true,true,true,false)>0)
+                 {
+                  Print("Can't make box for level - "+GetLastError());
+                 }
+
+              }
+           }
+        }
+     }
+
+   CurrentSupDem=iCustom(Symbol(),PERIOD_M15,"II_SupDemMOD_DarkBG_SolidFill_Sow",
+//---- iCustom values ---
+// ENUM_TIMEFRAMES forced_tf=
+                         PERIOD_CURRENT,
+//bool draw_zones=
+                         true,
+//bool solid_zones=
+                         true,
+//bool solid_retouch=
+                         true,
+//bool recolor_retouch=
+                         true,
+//bool recolor_weak_retouch =
+                         true,
+//bool zone_strength =
+                         true,
+//bool no_weak_zones =
+                         true,
+//bool draw_edge_price=
+                         false,
+//int zone_width =
+                         1,
+//bool zone_fibs =
+                         false,
+//int fib_style=
+                         0,
+//bool HUD_on=
+                         false,
+//bool timer_on=
+                         true,
+//int layer_zone=
+                         0,
+//int layer_HUD =
+                         20,
+//int corner_HUD=
+                         2,
+//int pos_x =
+                         100,
+//int pos_y =
+                         20,
+//bool alert_on=
+                         false,
+//bool alert_popup=
+                         false,
+//string alert_sound=
+                         "radar1.wav",
+//color color_sup_strong=
+                         C'67,78,92',
+//color color_sup_weak=
+                         C'74,74,74',
+//color color_sup_retouch=
+                         C'35,43,50',
+//color color_dem_strong =
+                         C'67,78,92',
+//color color_dem_weak=
+                         C'29,47,88',
+//color color_dem_retouch=
+                         C'29,47,88',
+//color color_fib=
+                         DodgerBlue,
+//color color_HUD_tf=
+                         Navy,
+//color color_arrow_up =
+                         SeaGreen,
+//color color_arrow_dn =
+                         Crimson,
+//color color_timer_back=
+                         DarkGray,
+//color color_timer_bar =
+                         Red,
+//color color_shadow=
+                         DarkSlateGray,
+
+//bool limit_zone_vis=
+                         false,
+//bool same_tf_vis=
+                         true,
+//bool show_on_m1 =
+                         false,
+//bool show_on_m5 =
+                         false,
+//bool show_on_m15 =
+                         false,
+//bool show_on_m30 =
+                         false,
+//bool show_on_h1 =
+                         false,
+//bool show_on_h4 =
+                         false,
+//bool show_on_d1 =
+                         false,
+//bool show_on_w1 =
+                         false,
+//bool show_on_mn =
+                         false,
+
+//int Price_Width=
+                         1,
+//int time_offset=
+                         0,
+//bool globals=
+                         false,
+//string BoxSuffix=
+                         "15M",
+//bool show_hollow=
+                         false,
+//OBJPROP_STYLE dash_style=
+                         STYLE_DOT,
+                         0,// iCustom line index
+
+                         0  // iCustom shift
+                        );
+
+   H1SupDem=iCustom(Symbol(),PERIOD_H1,"II_SupDemMOD_DarkBG_SolidFill_Sow",
+//---- iCustom values ---
+// ENUM_TIMEFRAMES forced_tf=
+                    PERIOD_CURRENT,//in order to draw indi right this must be set to period curret despite the icustom calling the Period_1H
+//bool draw_zones=
+                    true,
+//bool solid_zones=
+                    true,
+//bool solid_retouch=
+                    true,
+//bool recolor_retouch=
+                    true,
+//bool recolor_weak_retouch =
+                    true,
+//bool zone_strength =
+                    true,
+//bool no_weak_zones =
+                    true,
+
+//bool draw_edge_price=
+                    false,
+//int zone_width =
+                    1,
+
+//bool zone_fibs =
+                    false,
+//int fib_style=
+                    0,
+
+//bool HUD_on=
+                    false,
+//bool timer_on=
+                    true,
+//int layer_zone=
+                    0,
+//int layer_HUD =
+                    20,
+//int corner_HUD=
+                    2,
+//int pos_x =
+                    100,
+//int pos_y =
+                    20,
+
+//bool alert_on=
+                    false,
+//bool alert_popup=
+                    false,
+
+//string alert_sound=
+                    "radar1.wav",
+//color color_sup_strong=
+                    C'53,63,74',
+//color color_sup_weak=
+                    C'74,74,74',
+//color color_sup_retouch=
+                    C'35,43,50',
+//color color_dem_strong =
+                    C'53,63,74',
+//color color_dem_weak=
+                    C'29,47,88',
+//color color_dem_retouch=
+                    C'29,47,88',
+//color color_fib=
+                    DodgerBlue,
+//color color_HUD_tf=
+                    Navy,
+//color color_arrow_up =
+                    SeaGreen,
+//color color_arrow_dn =
+                    Crimson,
+//color color_timer_back=
+                    DarkGray,
+//color color_timer_bar =
+                    Red,
+//color color_shadow=
+                    DarkSlateGray,
+
+//bool limit_zone_vis=
+                    false,
+//bool same_tf_vis=
+                    true,
+//bool show_on_m1 =
+                    false,
+//bool show_on_m5 =
+                    false,
+//bool show_on_m15 =
+                    false,
+//bool show_on_m30 =
+                    false,
+//bool show_on_h1 =
+                    false,
+//bool show_on_h4 =
+                    false,
+//bool show_on_d1 =
+                    false,
+//bool show_on_w1 =
+                    false,
+//bool show_on_mn =
+                    false,
+//int Price_Width=
+                    1,
+//int time_offset=
+                    0,
+//bool globals=
+                    false,
+//string BoxSuffix=
+                    "H1",
+//bool show_hollow=
+                    true,
+//OBJPROP_STYLE dash_style=
+                    STYLE_DOT,
+// iCustom line index
+                    0,
+// iCustom shift
+                    1
+                   );
+
+   H4SupDem=iCustom(Symbol(),PERIOD_H4,"II_SupDemMOD_DarkBG_SolidFill_Sow",
+//---- iCustom values ---
+// ENUM_TIMEFRAMES forced_tf=
+                    PERIOD_CURRENT,//in order to draw indi right this must be set to period curret despite the icustom calling the Period_1H
+//bool draw_zones=
+                    true,
+//bool solid_zones=
+                    true,
+//bool solid_retouch=
+                    true,
+//bool recolor_retouch=
+                    true,
+//bool recolor_weak_retouch =
+                    true,
+//bool zone_strength =
+                    true,
+//bool no_weak_zones =
+                    true,
+
+//bool draw_edge_price=
+                    false,
+//int zone_width =
+                    1,
+
+//bool zone_fibs =
+                    false,
+//int fib_style=
+                    0,
+
+//bool HUD_on=
+                    false,
+//bool timer_on=
+                    true,
+//int layer_zone=
+                    0,
+//int layer_HUD =
+                    20,
+//int corner_HUD=
+                    2,
+//int pos_x =
+                    100,
+//int pos_y =
+                    20,
+
+//bool alert_on=
+                    false,
+//bool alert_popup=
+                    false,
+
+//string alert_sound=
+                    "radar1.wav",
+//color color_sup_strong=
+                    C'53,63,74',
+//color color_sup_weak=
+                    C'74,74,74',
+//color color_sup_retouch=
+                    C'35,43,50',
+//color color_dem_strong =
+                    C'53,63,74',
+//color color_dem_weak=
+                    C'29,47,88',
+//color color_dem_retouch=
+                    C'29,47,88',
+//color color_fib=
+                    DodgerBlue,
+//color color_HUD_tf=
+                    Navy,
+//color color_arrow_up =
+                    SeaGreen,
+//color color_arrow_dn =
+                    Crimson,
+//color color_timer_back=
+                    DarkGray,
+//color color_timer_bar =
+                    Red,
+//color color_shadow=
+                    DarkSlateGray,
+
+//bool limit_zone_vis=
+                    false,
+//bool same_tf_vis=
+                    true,
+//bool show_on_m1 =
+                    false,
+//bool show_on_m5 =
+                    false,
+//bool show_on_m15 =
+                    false,
+//bool show_on_m30 =
+                    false,
+//bool show_on_h1 =
+                    false,
+//bool show_on_h4 =
+                    false,
+//bool show_on_d1 =
+                    false,
+//bool show_on_w1 =
+                    false,
+//bool show_on_mn =
+                    false,
+//int Price_Width=
+                    1,
+//int time_offset=
+                    0,
+//bool globals=
+                    false,
+//string BoxSuffix=
+                    "H4",
+//bool show_hollow=
+                    true,
+//OBJPROP_STYLE dash_style=
+                    STYLE_DASH,
+// iCustom line index
+                    0,
+// iCustom shift
+                    1
+                   );
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -169,20 +771,41 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
-//---
+
+   string id = WindowExpertName() + Symbol();
+   GlobalVariableDel(id);
+
+   /*
+   int i;
+   for(i=0; i<ObjectsTotal(); i++)
+     {
+      string strname=ObjectName(i);
+      if(StringFind(strname,"Button-")!=-1 || StringFind(strname,"TradeRules")!=-1)
+        {
+            ObjectDelete(0,strname);
+            Print("Deleted "+strname);
+        }
+     }
+     */
+   TextDelete(0,"TradeRules1");
+   TextDelete(0,"TradeRules2");
+   TextDelete(0,"TradeRules3");
+   TextDelete(0,"TradeRules4");
+   TextDelete(0,"TradeRules5");
+   TextDelete(0,"TradeRules6");
+   TextDelete(0,"TradeRules7");
+   ObjectDelete("Button-ShowLevels");
+   ObjectDelete("Button-EnableRules");
+   ObjectDelete("Button-15M");
+   ObjectDelete("Button-H1");
+   ObjectDelete("Button-H4");
+   ObjectDelete("Button-D1");
 
   }
 
 //+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-double setTP(double open, double tp_pips) { if(tp_pips==0) return(0); else return(NormalizeDouble(open+(tp_pips*myPoint),Digits)); }
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-double setSL(double open, double sl_pips) { if(sl_pips==0) return(0); else return(NormalizeDouble(open-(sl_pips*myPoint),Digits)); }
-//+------------------------------------------------------------------+
-//|                                                                  |
+//| Checks to see if a trade already exists that has a certain comment  -
+//| SB 22 Feb - Not sure if this is relevant anymore. Could be replaced by a built in function I'm pretty sure.
 //+------------------------------------------------------------------+
 bool isAlreadyEnter(string strcomment)
   {
@@ -213,42 +836,67 @@ bool isAlreadyEnter(string strcomment)
    return(false);
   }
 //+------------------------------------------------------------------+
-//|                                                                  |
+//| If any trades are currently open then check to see if there is any box for them otherwise delete the trade. Leave any active trade boxes.
 //+------------------------------------------------------------------+
 void CheckBoxes()
   {
    int i;
    int x;
    int status;
+
+//Search through all open orders
    for(i=OrdersTotal()-1; i>=0; i--)
      {
+      //For all orders that are open
       if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES)==True)
         {
+         //check to see if the order matches the current symbool, magic number and if the OrderType is not buy or sell but limit orders.
          if(OrderSymbol()==Symbol() && OrderMagicNumber()==magic_number && OrderType()>1)
            {
+            //Check the OrderComment to see if it was made by the EA by checking the trade code has '_SB00'. If so strip out the '_SB00' and leave just the rest of the OrderComment()
             string str1=StringSubstr(OrderComment(),0,StringFind(OrderComment(),"_"+TradeCode));
+
+            //Removes the 'T02_' in front of the 'Rectangle XXXXX'
             string str2=StringSubstr(str1,StringFind(str1,"_")+1);
+
+            //if you CANNOT find the order's comment with any related object name
             if((ObjectFind(str2)==-1) || ObjectFind(str2)!=-1)
               {
+               //Extract the colour of the box - should this even trigger when there is no box that can be found? Redudant code?
                color objcolor = ObjectGet(str2,OBJPROP_COLOR);
+
+               //If the colour of the box is not Red or GreenYellow then
                if(objcolor!=activate_colour && objcolor!=clrGreenYellow)
                  {
+
                   status=0;
+                  //Take screenshot
+                  CaptureScreenshot(OrderTicket(),"4_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Cancelled");
+
+                  //If the box isn't found then delete the order
+                  //Try 5 times to Delete the order
                   for(x = 5; x!= 0; x--)
                     {
+                     //Not exactly sure what this does
                      while(IsTradeContextBusy() || !IsTradeAllowed())
                         Sleep(5000);
+                     Print("OrderDeleting : "+OrderTicket());
+
+                     //Delete the order as it is no longer required.
                      status=OrderDelete(OrderTicket());
                      if(status==1)
                        {
                         break;
                        }
                     }
+
+                  //Delete all the TP lines since they are no longer needed
                   ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vOP2_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vSL2_"+IntegerToString(OrderTicket()));
+                  ObjectDelete("Link_"+IntegerToString(OrderTicket()));
                  }
               }
            }
@@ -256,43 +904,125 @@ void CheckBoxes()
      }
   }
 //+------------------------------------------------------------------+
-//|                                                                  |
+//|Once a order has closed, the box should be updated and should be sized readjusted as well as any extra lines removed
 //+------------------------------------------------------------------+
 void FindClosedTrades()
   {
    int i;
    for(i=OrdersHistoryTotal()-1; i>=0; i--)
      {
+      //Scan through full order history
       if(OrderSelect(i,SELECT_BY_POS,MODE_HISTORY)==True)
         {
+         //Setup variables for each of the historial roders
          int orderticket=OrderTicket();
          int ordertype=OrderType();
          string ordersymbol=OrderSymbol();
          int ordermagic=OrderMagicNumber();
          string ordercomment=OrderComment();
          double orderlots=OrderLots();
+         double profit = OrderProfit() + OrderCommission() + OrderSwap();
+
+         //if order is closed and the same chart as this and has a magic number
          if(ordersymbol==Symbol() && ordermagic==magic_number && ordertype<=1)
            {
+            //Look inside each order to find if the Order comment contains the TradeCode used to identify EA order
             int ind=StringFind(ordercomment,"_"+TradeCode);
+
+            //Strip out the ordercomment to find the name of the object that triggered it
             string str1=StringSubstr(ordercomment,0,ind);
             string str2=StringSubstr(str1,StringFind(str1,"_")+1);
-            ObjectSet(str2,OBJPROP_COLOR,clrBlue);
-            ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_WIDTH,1);
-            ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_STYLE,STYLE_DASH);
-            if(allowed_2nd_trade)
+
+            //If closed trades has a box with the correct name but its not blue then start the close trade process which is to take a screenshot, set the color to blue and then change the dimension of the box so that it ends upon trade close to prevent clutter
+            if(ObjectGet(str2,OBJPROP_COLOR)!=clrBlue &&  ObjectFind(str2)!=-1)
               {
-               DeletePending2(str2);
+               //If TP2 line is found and its not a dashdot then change the line to dashdot and set the line to stop at the order close time
+               if(ObjectFind("vTP2_"+IntegerToString(orderticket))!=-1 && ObjectGet("vTP2_"+IntegerToString(orderticket),OBJPROP_STYLE)!=STYLE_DASHDOTDOT)
+                 {
+                  ObjectSet("vTP2_"+IntegerToString(orderticket),OBJPROP_WIDTH,1);
+                  ObjectSet("vTP2_"+IntegerToString(orderticket),OBJPROP_STYLE,STYLE_DASHDOTDOT);
+                  ObjectSet("vTP2_"+IntegerToString(orderticket),OBJPROP_TIME2,OrderCloseTime());
+                  CaptureScreenshot(orderticket,"4_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeClose_TP2"+"_"+str2);
+                  SendScreen(channeltlg,0,Symbol()+" Order Type " + IntegerToString(OrderType()) + " Price Close " + DoubleToString(OrderClosePrice(),Digits()) + " Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                  if(allowed_2nd_trade)
+                    {
+                     DeletePending2(str2);
+                    }
+                  ObjectDelete("vvOP2_"+IntegerToString(orderticket));
+                  ObjectDelete("vOP2_"+IntegerToString(orderticket));
+                  //ObjectDelete("vTP2_"+IntegerToString(orderticket));  //Keep the TP2
+                  ObjectDelete("vSL2_"+IntegerToString(orderticket));
+                  //ObjectDelete("Link_"+IntegerToString(orderticket));  //Link line is nice and clean so we should keep it.
+                 }
+
+               if(ObjectGet("vTP1_"+IntegerToString(orderticket),OBJPROP_STYLE)!=STYLE_DASHDOTDOT &&  ObjectFind("vTP1_"+IntegerToString(orderticket))!=-1)
+                 {
+
+                  ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_WIDTH,1);
+                  ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_STYLE,STYLE_DASHDOTDOT);
+                  ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_TIME2,OrderCloseTime());
+                  CaptureScreenshot(orderticket,"4_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeClose_TP1"+"_"+str2);
+                  SendScreen(channeltlg,0,"Order Type " + IntegerToString(OrderType()) + " Price Close " + DoubleToString(OrderClosePrice(),Digits()) + " Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                  ObjectSet(str2,OBJPROP_COLOR,clrBlue);
+                  ObjectSet(str2,OBJPROP_TIME2,OrderCloseTime());
+
+                  if(allowed_2nd_trade)
+                    {
+                     ObjectDelete("vvOP2_"+IntegerToString(orderticket));
+                     ObjectDelete("vOP2_"+IntegerToString(orderticket));
+                     ObjectDelete("vSL2_"+IntegerToString(orderticket));
+                    }
+
+                  ObjectDelete("InfoBox_"+str2);
+
+                  // This part of the infobox handles the changes once the trade has been entered. By this time the box should have already been created.
+                  //------------ Update the infobox with changes on every tick -----------------
+                  double tpprice=OrderTakeProfit();
+                  double tp_in_pips,stop_in_pips,RvR,entry,sl;
+                  string infobox;
+
+                  //Check if TP line is above the box to check if this is a buy order
+                  if(OrderType()==OP_BUY || OrderType()==OP_BUYLIMIT)
+                    {
+                     entry=ObjectGet(str2,OBJPROP_PRICE1);
+                     sl=ObjectGet(str2,OBJPROP_PRICE2);
+                     //Calculcate the various TP,Stop and RvR
+                     tp_in_pips=NormalizeDouble((tpprice-entry)/myPoint,Digits);
+                     stop_in_pips=NormalizeDouble((entry-sl)/myPoint,Digits);
+                     RvR=tp_in_pips/stop_in_pips;
+                    }
+                  else
+                    {
+                     entry=ObjectGet(str2,OBJPROP_PRICE2);
+                     sl=ObjectGet(str2,OBJPROP_PRICE1);
+                     //Check if TP line is below the box to check if this is a sell order
+                     tp_in_pips=NormalizeDouble((entry-tpprice)/myPoint,Digits);
+                     stop_in_pips=NormalizeDouble((sl-entry)/myPoint,Digits);
+                     RvR=tp_in_pips/stop_in_pips;
+
+                    }
+
+                  //Generate the infobox
+                  infobox="CLOSED SL: "+DoubleToStr(NormalizeDouble(stop_in_pips,2),1)+" | TP: "+DoubleToStr(tp_in_pips,1)+" | RvR: "+DoubleToStr(RvR,1);
+                  //Send order to infobox
+                  TextCreate(0,"InfoBoxClosed_"+str2,0,ObjectGet(str2,OBJPROP_TIME1),MathMax(entry,sl),infobox,"Ariel",9,clrYellow,0.0,ANCHOR_LEFT_UPPER);
+                  //   string Header = "OrderId,DateTime,OrderType,Symbol,Lots,TpInPips,SlInPips,Rvr,Trade Outcome,Current Account,Comments,Trade OutComments";
+                  
+                  string resulttocsv=IntegerToString(orderticket) + "," + TimeToString(OrderOpenTime()) + "," + IntegerToString(ordertype) + "," + Symbol() + "," + DoubleToString(orderlots,2) + "," + 
+                  DoubleToString(tp_in_pips,Digits()) + "," + DoubleToString(stop_in_pips,Digits()) + "," + DoubleToString(RvR,2) + "," + 
+                  DoubleToString((profit>0)?NormalizeDouble(MathAbs(OrderClosePrice()-OrderOpenPrice())/myPoint,Digits):NormalizeDouble(-MathAbs(OrderClosePrice()-OrderOpenPrice()),Digits())/myPoint,Digits)+ "," + DoubleToString(AccountBalance(),Digits());
+                  WriteFile(logfile,resulttocsv);
+                  
+                  
+                  // ------------------------------------------------------------
+                 }
               }
-            ObjectDelete("vvOP2_"+IntegerToString(orderticket));
-            ObjectDelete("vOP2_"+IntegerToString(orderticket));
-            ObjectDelete("vTP2_"+IntegerToString(orderticket));
-            ObjectDelete("vSL2_"+IntegerToString(orderticket));
            }
         }
      }
   }
 //+------------------------------------------------------------------+
-//|                                                                  |
+//|  If box no longer exists on the screen then the trade order should also be deleted since it is no longer valid.
 //+------------------------------------------------------------------+
 void DeleteTradeAfterBox()
   {
@@ -303,7 +1033,7 @@ void DeleteTradeAfterBox()
      {
       if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES)==True)
         {
-         if(OrderSymbol()==Symbol() && OrderMagicNumber()==magic_number && OrderType()>1)
+         if(OrderSymbol()==Symbol() && OrderMagicNumber()==magic_number)
            {
             string str1=StringSubstr(OrderComment(),0,StringFind(OrderComment(),"_"+TradeCode));
             string str2=StringSubstr(str1,StringFind(str1,"_")+1);
@@ -314,6 +1044,8 @@ void DeleteTradeAfterBox()
             if(TimeCurrent()>=timex+(Period()*60))
               {
                status=0;
+               //Take screenshot
+               CaptureScreenshot(OrderTicket(),Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeDelete");
                for(x = 5; x!= 0; x--)
                  {
                   while(IsTradeContextBusy() || !IsTradeAllowed())
@@ -326,16 +1058,21 @@ void DeleteTradeAfterBox()
                  }
                ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vOP2_"+IntegerToString(OrderTicket()));
-               ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
                ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vSL2_"+IntegerToString(OrderTicket()));
+               //Leaving the TP1 and Link line as I think its good to have for reference.
+               ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_WIDTH,1);
+               ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_STYLE,STYLE_DASH);
+               //ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
+               //ObjectDelete("Link_"+IntegerToString(OrderTicket()));
+               ObjectSet(str2,OBJPROP_COLOR,clrMaroon);
               }
            }
         }
      }
   }
 //+------------------------------------------------------------------+
-//|                                                                  |
+//| Check to see if the TP lines have moved. If so then update the order to match the location of the TP lines.
 //+------------------------------------------------------------------+
 void TPLinesMoved()
   {
@@ -350,28 +1087,31 @@ void TPLinesMoved()
             double tpprice=NormalizeDouble(ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
             if(tpprice!=OrderTakeProfit() && StringFind(OrderComment(),"T01_")!=-1)
               {
-               //logb("----tplinesmoved1");
                ModifyProfitTarget(OrderTicket(),tpprice,OrderStopLoss());
               }
             double tpprice2=NormalizeDouble(ObjectGet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
             if(tpprice2!=OrderTakeProfit() && StringFind(OrderComment(),"T02_")!=-1)
               {
-               //logb("----tplinesmoved1");
                ModifyProfitTarget(OrderTicket(),tpprice2,OrderStopLoss());
+              }
+            double entry2=NormalizeDouble(ObjectGet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
+            if(entry2!=OrderOpenPrice() && StringFind(OrderComment(),"T02_")!=-1)
+              {
+               ModifyProfitTarget(OrderTicket(),NULL,NULL,entry2);
               }
 
             double slprice2=NormalizeDouble(ObjectGet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
             if(slprice2!=OrderStopLoss() && StringFind(OrderComment(),"T02_")!=-1)
               {
-               //logb("----tplinesmoved3");
                ModifyProfitTarget(OrderTicket(),OrderTakeProfit(),slprice2);
               }
+
            }
         }
      }
   }
 //+------------------------------------------------------------------+
-//|                                                                  |
+//| Check if box has moved, if so, update the order to reflect the new location of the box.
 //+------------------------------------------------------------------+
 void BoxMoved()
   {
@@ -393,13 +1133,22 @@ void BoxMoved()
             color boxColor=ObjectGet(str2,OBJPROP_COLOR);
             int ret=0;
 
+            //Search if box exists and if its the right red colour which indicates it is active
             if(StringFind(OrderComment(),"T01_")!=-1 && boxColor==activate_colour)
               {
+
+               //Check if the current order is a buy limit. Also ensure that the price is above the top of the box.
                if(OrderType()==OP_BUYLIMIT && Bid>upperline)
                  {
+
+                  //Check to see if the limit order is the same as the dimensions of the box.
                   if(OrderOpenPrice()!=upperline || OrderStopLoss()!=lowerline)
                     {
+
+                     //if the box is not the same as the order then update the order to the box's location
                      ret=OrderModify(OrderTicket(),NormalizeDouble(upperline,Digits),NormalizeDouble(lowerline,Digits),OrderTakeProfit(),OrderExpiration());
+
+                     //Once the order has been updated then all the lines need to be updated also to reflect the new price
                      if(ret>0)
                        {
                         ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline+upperline-lowerline);
@@ -416,12 +1165,59 @@ void BoxMoved()
                         ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline+upperline-lowerline+upperline-lowerline);
                         ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+upperline-lowerline+upperline-lowerline);
-                        ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
-                        ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
                         TextMove(0,"InfoBox_"+str2,MathMin(time1,time2),lowerline);
-                        ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
-                        ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                        ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline+2*(upperline-lowerline));
+                        ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+2*(upperline-lowerline));
+                        ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline);
+                        ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1));
+                        ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                        ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMin(time1,time2));
+                        if(allowed_2nd_trade)
+                          {
+                           ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                           ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,(MathMax(time1,time2)-MathMin(time1,time2))/2+MathMin(time1,time2));
+                           ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,(MathMax(time1,time2)-MathMin(time1,time2))/2+MathMin(time1,time2));
+                           ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                          }
+                        else
+                          {
+                           ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                           ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                           ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                           ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                          }
                        }
+
+                     //Take screenshot of the Trade entry
+                     CaptureScreenshot(OrderTicket(),"1.6_" + GetPeriodName(PERIOD_CURRENT) + "_"  +Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     long idchart=0;
+                     // Screnshot M15 trade
+                     idchart = OpenNewChart(PERIOD_M15);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.5_" + GetPeriodName(PERIOD_M15) + "_"    +Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot H1 trade
+                     idchart = OpenNewChart(PERIOD_H1);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.4_" + GetPeriodName(PERIOD_H1) +  "_"  +TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot H4 trade
+                     idchart = OpenNewChart(PERIOD_H4);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.3_" + GetPeriodName(PERIOD_H4) +  "_" + Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot D1 trade
+                     idchart = OpenNewChart(PERIOD_D1);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.2_" + GetPeriodName(PERIOD_D1) +  "_" + Symbol()+ "_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot W1 trade
+                     idchart = OpenNewChart(PERIOD_W1);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.1_" + GetPeriodName(PERIOD_W1) +  "_" + Symbol()+ "_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+
+
                     }
                  }
                else
@@ -451,27 +1247,85 @@ void BoxMoved()
                            TextMove(0,"InfoBox_"+str2,MathMin(time1,time2),upperline);
                            ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
                            ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                           ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,lowerline-2*(upperline-lowerline));
+                           ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,lowerline-2*(upperline-lowerline));
+                           ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,lowerline);
+                           ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1));
+                           ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                           ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMin(time1,time2));
+                           if(allowed_2nd_trade)
+                             {
+                              ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                              ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,(MathMax(time1,time2)-MathMin(time1,time2))/2+MathMin(time1,time2));
+                              ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,(MathMax(time1,time2)-MathMin(time1,time2))/2+MathMin(time1,time2));
+                              ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                             }
+                           else
+                             {
+                              ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                              ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                              ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                              ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                             }
                           }
+                        //Take screenshot of the Trade entry
+                        CaptureScreenshot(OrderTicket(),"1.6_" + GetPeriodName(PERIOD_CURRENT) + "_"  +Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                        long idchart=0;
+                        // Screnshot M15 trade
+                        idchart = OpenNewChart(PERIOD_M15);
+                        SetTemplate(idchart);
+                        CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.5_" + GetPeriodName(PERIOD_M15) + "_"    +Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                        CloseChart(idchart);
+                        // Screnshot H1 trade
+                        idchart = OpenNewChart(PERIOD_H1);
+                        SetTemplate(idchart);
+                        CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.4_" + GetPeriodName(PERIOD_H1) +  "_"  +TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                        CloseChart(idchart);
+                        // Screnshot H4 trade
+                        idchart = OpenNewChart(PERIOD_H4);
+                        SetTemplate(idchart);
+                        CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.3_" + GetPeriodName(PERIOD_H4) +  "_" + Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                        CloseChart(idchart);
+                        // Screnshot D1 trade
+                        idchart = OpenNewChart(PERIOD_D1);
+                        SetTemplate(idchart);
+                        CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.2_" + GetPeriodName(PERIOD_D1) +  "_" + Symbol()+ "_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                        CloseChart(idchart);
+                        // Screnshot W1 trade
+                        idchart = OpenNewChart(PERIOD_W1);
+                        SetTemplate(idchart);
+                        CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.1_" + GetPeriodName(PERIOD_W1) +  "_" + Symbol()+ "_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                        CloseChart(idchart);
                        }
                     }
+
               }
+
+            //--------- Re-adjust the link line if the TP lines have moved ----------------
+            if(ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1) != ObjectGet("Link_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2))
+              {
+               ObjectSet("Link_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1));
+              }
+            //-----------------------------------------------------------------------------
 
 
             //Ok so even though this function is meant to be for Box moved here is the Stop loss to break even code for the second trade
             if(allowed_2nd_trade)
               {
 
-               //Initiate variables as required for second trade.
-               int    Orderticket = OrderTicket();
+               //Create variable to track order comment
                string Ordercomment = OrderComment();
-               double Ordertakeprofit = OrderTakeProfit();
-               double Orderclose = OrderClosePrice();
-               double Orderopenprice = OrderOpenPrice();
-               double Orderstoploss = OrderStopLoss();
 
                //See if this is order is a second trade
                if(StringFind(Ordercomment,"T02_") != -1)
                  {
+
+                  //Initiate variables as required for second trade.
+                  int    Orderticket = OrderTicket();
+                  double Ordertakeprofit = OrderTakeProfit();
+                  double Orderclose = OrderClosePrice();
+                  double Orderopenprice = OrderOpenPrice();
+                  double Orderstoploss = OrderStopLoss();
 
                   //Find the Order ID of the original order based off the name of the rectangle
                   int FirstTradeID = OrderFind("T01_"+str2);
@@ -495,40 +1349,29 @@ void BoxMoved()
                            ObjectSet(str2,OBJPROP_COLOR,clrGreenYellow);
 
                            //Modify the order to move the Stop loss to break even point but keep take profit as is.
-                           //logb("---BUY first trade now moved SL to BE");
-                           ModifyProfitTarget(FirstTradeID,NULL,price1);
-
+                           ModifyProfitTarget(FirstTradeID,NULL,upperline);
+                           CaptureScreenshot(FirstTradeID,"2_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move1stTradeToBE");
+                           SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(upperline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                           FirstSL = FirstOpenPrice;
                           }
-
-                        /*
-                        logb("Reached. Ordercomment ", OrderComment()) ;// demo showing how to add paramters
-                        logb("   Ordercom var: ",Ordercomment);
-                        logb("   SecondTradeBreakevenPrice:", SecondTradeBreakevenPrice);
-                        //logb("   OrderTakeProfit():",OrderTakeProfit());
-                        logb("   OrderTakeProfit var:", Ordertakeprofit);
-                        //logb("   OrderOpenPrice():", OrderOpenPrice());
-                        logb("   Orderopenprice:", Orderopenprice);
-                        logb("   FirstSL:", FirstSL);
-                        logb("   FirstOpenPrice:", FirstOpenPrice);
-                        */
-
-                        //Alert("Second OrderComment: "+OrderComment()+" "+StringFind(OrderComment(),"T02_")+" Trade:"+OrderTicket()+" OrderTakeProfit"+OrderTakeProfit()+" OrderOpen: "+OrderOpenPrice()+" Price1:"+price1+" SecondTradeBreak:"+SecondTradeBreakevenPrice);
 
                         double slprice2=NormalizeDouble(ObjectGet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE1),Digits);
 
                         //Change the second trade SL to the top of the rectangle
-                        if(Bid>=SecondTradeBreakevenPrice && slprice2 != price1)
+                        if(Bid>=SecondTradeBreakevenPrice && slprice2 != upperline)
                           {
-                           //logb("---- BUY second trade now moved SL to BE");
 
                            //Move the SL line so the TPLinesMoved() doesn't override this
-                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE1,price1);
-                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE2,price1);
+                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE1,upperline);
+                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE2,upperline);
+
+                           CaptureScreenshot(FirstTradeID,"3_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move2ndTradeToBE");
+                           SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(upperline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+
 
                            if(slprice2 != Orderstoploss)
                              {
-                              //logb("---- BUY second trade SL changed");
-                              ModifyProfitTarget(Orderticket,NULL,price1);
+                              ModifyProfitTarget(Orderticket,NULL,upperline);
                              }
                           }
                        }
@@ -543,31 +1386,30 @@ void BoxMoved()
                           {
                            //Change the color of the Rectangle so that it disables it from auto updating price back to price within the rectangle and allows to override.
                            ObjectSet(str2,OBJPROP_COLOR,clrGreenYellow);
-
-                           //Modify the order to move the Stop loss to break even point but keep take profit as is.
-                           //logb("---SELL first trade now moved SL to BE");
-                           ModifyProfitTarget(FirstTradeID,NULL,price1); //This might have a bug in it. Need to look at original order first
-
+                           ModifyProfitTarget(FirstTradeID,NULL,lowerline); //This might have a bug in it. Need to look at original order first
+                           CaptureScreenshot(FirstTradeID,"2_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move1stTradeToBE");
+                           SendScreen(channeltlg,0,Symbol()+ "| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(lowerline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                           FirstSL = FirstOpenPrice;
                           }
 
 
-                        //Alert("Second OrderComment: "+OrderComment()+" "+StringFind(OrderComment(),"T02_")+" Trade:"+OrderTicket()+" OrderTakeProfit"+OrderTakeProfit()+" OrderOpen: "+OrderOpenPrice()+" Price1:"+price1+" SecondTradeBreak:"+SecondTradeBreakevenPrice);
 
                         double slprice2=NormalizeDouble(ObjectGet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE1),Digits);
 
                         //Change the second trade SL to the top of the rectangle
-                        if(Ask<=SecondTradeBreakevenPrice && slprice2 != price1)
+                        if(Ask<=SecondTradeBreakevenPrice && slprice2 != lowerline)
                           {
-                           //logb("---- SELL second trade now moved SL to BE");
 
                            //Move the SL line so the TPLinesMoved() doesn't override this
-                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE1,price1);
-                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE2,price1);
+                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE1,lowerline);
+                           ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE2,lowerline);
+
+                           CaptureScreenshot(FirstTradeID,"3_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move2ndTradeToBE");
+                           SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(lowerline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
 
                            if(slprice2 != Orderstoploss)
                              {
-                              //logb("---- SELL 2nd trade SL changed");
-                              ModifyProfitTarget(Orderticket,NULL,price1);
+                              ModifyProfitTarget(Orderticket,NULL,lowerline);
                              }
                           }
 
@@ -582,8 +1424,41 @@ void BoxMoved()
               {
 
 
-
               }
+
+
+            // This part of the infobox handles the changes once the trade has been entered. By this time the box should have already been created.
+            //------------ Update the infobox with changes on every tick -----------------
+            double tpprice=NormalizeDouble(ObjectGet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1),Digits);
+            double tp_in_pips,stop_in_pips,RvR;
+            string infobox;
+
+            //Check if TP line is above the box to check if this is a buy order
+            if(tpprice!= NULL && tpprice > upperline)
+              {
+
+               //Calculcate the various TP,Stop and RvR
+               tp_in_pips=NormalizeDouble((tpprice-upperline)/myPoint,Digits);
+               stop_in_pips=NormalizeDouble((upperline-lowerline)/myPoint,Digits);
+               RvR=tp_in_pips/stop_in_pips;
+              }
+            else
+
+               //Check if TP line is below the box to check if this is a sell order
+               if(tpprice!= NULL && tpprice < lowerline)
+                 {
+                  tp_in_pips=NormalizeDouble((lowerline-tpprice)/myPoint,Digits);
+                  stop_in_pips=NormalizeDouble((upperline-lowerline)/myPoint,Digits);
+                  RvR=tp_in_pips/stop_in_pips;
+                 }
+
+            //Generate the infobox
+            infobox="SL: "+DoubleToStr(NormalizeDouble(stop_in_pips,2),1)+" | TP: "+DoubleToStr(tp_in_pips,1)+" | RvR: "+DoubleToStr(RvR,1);
+
+            //Send order to infobox
+            TextChange(0,"InfoBox_"+str2,infobox);
+            // ------------------------------------------------------------
+
            }
         }
      }
@@ -629,18 +1504,19 @@ void SetPending2()
                   datetime time2=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME2)));
                   datetime frontline=MathMax(time1,time2);
                   datetime backline=MathMin(time1,time2);
+                  Print("SecondTrigger");
                   int openticket=Open_Trade(Symbol(),cmd,price,orderlots,sl,tp,"T02_"+strname+"_"+TradeCode);
                   //what is this below?
                   if(openticket>0)
                     {
                      ObjectDelete("vvOP2_"+IntegerToString(orderticket));
                      ObjectDelete("vOP2_"+IntegerToString(orderticket));
-                     //ObjectDelete("vTP1_"+IntegerToString(orderticket));
+                     //ObjectDelete("vTP1_"+IntegerToString(orderticket)); //Don't delete this from here otherwise the SL TL lines wont work.
                      ObjectDelete("vTP2_"+IntegerToString(orderticket));
                      ObjectDelete("vSL2_"+IntegerToString(orderticket));
                      DrawTL("vOP2_"+IntegerToString(openticket),price,backline,price,frontline,clrGreen,STYLE_SOLID,1);
                      DrawTL("vSL2_"+IntegerToString(openticket),sl,backline,sl,frontline,clrGray,STYLE_SOLID,1);
-                     DrawTL("vTP2_"+IntegerToString(openticket),tp,backline,tp,frontline,clrYellow,STYLE_SOLID,2);
+                     DrawTL("vTP2_"+IntegerToString(openticket),tp,backline,tp,frontline,clrBrown,STYLE_SOLID,2);
 
                     }
 
@@ -722,7 +1598,7 @@ int OrderFind(string OrderCommentry)
   }
 
 //+------------------------------------------------------------------+
-//|                                                                  |
+//|   Deletes 2nd trade pending order (i think)                                 |
 //+------------------------------------------------------------------+
 void DeletePending2(string strcomment)
   {
@@ -737,6 +1613,8 @@ void DeletePending2(string strcomment)
            {
             if(StringFind(OrderComment(),"T02_"+strcomment)!=-1)
               {
+               //Take screenshot
+               CaptureScreenshot(OrderTicket(),"5_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_DeletePending");
                for(x=5; x!=0; x--)
                  {
                   while(IsTradeContextBusy() || !IsTradeAllowed())
@@ -749,6 +1627,7 @@ void DeletePending2(string strcomment)
                      ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
                      ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
                      ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
+                     ObjectDelete("Link_"+IntegerToString(OrderTicket()));
                      ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_WIDTH,1);
                      ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_STYLE,STYLE_DASH);
                      break;
@@ -915,22 +1794,43 @@ string CandleIdentifier(string SymbolCheck,
 
      }
   }
+
+
+//+------------------------------------------------------------------+
+//|//Catch new trade and send photo to telegram                      |
+//+------------------------------------------------------------------+
+void NewTrade()
+  {
+   static int TotalOrder;
+   int OpenOrder=GetOpenOrder(magic_number,Symbol());
+   if(TotalOrder !=OpenOrder)
+     {
+      CheckOrderForSendTrade(magic_number,Symbol(),differenceinsecondforsendphot);
+      TotalOrder = OpenOrder;
+     }
+
+  }
+
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
   {
 //---
+   if(!IsTesting())
+      NewTrade();
    int i;
    double sl=0;
    double tp=0;
    double tp2=0;
    int openticket1=0;
    int openticket2=0;
-   double openprice1=0;
-   double openprice2=0;
+   double entryprice1=0;
+   double entryprice2=0;
    double stoploss2=0;
-   double stop=0;
+   double stop_in_pips=0;
+   double tp_in_pips;
+   double RvR;
 
    bool enableopen=true;
 
@@ -941,6 +1841,7 @@ void OnTick()
    double lowerline;
    datetime backline;
    datetime frontline;
+   datetime middleofbox;
 
    CheckBoxes();  //Delete limit trades if Box is deleted or change its colour
    FindClosedTrades(); //Change closed trades box to blue and tp line to dashes
@@ -948,15 +1849,19 @@ void OnTick()
    TPLinesMoved();   //Check if TP line is moved
    BoxMoved();       //Check if Box is moved
    SetPending2();  //Set second order trade
+   ManageButtons(); //Manage the buttons for showing indicator
 
 //--- Bullish and Bearish engulfing pattern find
+
+//CandleFinder=CandleIdentifier(Symbol(),PERIOD_M15,1,2,3,clrBlue,STYLE_SOLID,NULL,arrayOut);
    /*
-   CandleFinder=CandleIdentifier(Symbol(),PERIOD_M5,1,2,3,clrBlue,STYLE_SOLID,NULL,arrayOut);
    ModifySDLevels(DemandLevelCounter,"Demand_",NULL,NULL,iTime(Symbol(), 0, 2),NULL,NULL); //Stretch all levels to reach the current time.
    ModifySDLevels(SupplyLevelCounter,"Supply_",NULL,NULL,iTime(Symbol(), 0, 2),NULL,NULL); //Stretch all levels to reach the current time.
    CleanAbsorbedLevels(Symbol(),Period(),DemandLevelCounter,"Demand_"); //Calculate the amount of penetrated levels for all Demand levels and adjust the size.
    CleanAbsorbedLevels(Symbol(),Period(),SupplyLevelCounter,"Supply_"); //Calculate the amount of penetrated levels for all Supply levels
    */
+
+
 
    if(enableopen)
      {
@@ -967,83 +1872,149 @@ void OnTick()
            {
             if(ObjectGet(strname,OBJPROP_COLOR)==activate_colour)
               {
+               //Get the number of lots from the description
                strlots=ObjectDescription(strname);
 
+               //Find the box and extract the location. Top of the box is price1 and bottom of the box is price2
                double price1=GetRectPrice(strname,OBJPROP_PRICE1);
                double price2=GetRectPrice(strname,OBJPROP_PRICE2);
+
+               //Find the box and the left side of the box is determined as time1 and the right side of the box is time2
                datetime time1=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME1)));
                datetime time2=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME2)));
+
+               //Determine the upper and lower line of the box by understandig which is the Min or max value
                upperline=MathMax(price1,price2);
                lowerline=MathMin(price1,price2);
+
+               //Determine which is the time of the right of the box, middle of the box and the left of the box
                frontline=MathMax(time1,time2);
+               middleofbox = (time2 - time1)/2+time1;
                backline=MathMin(time1,time2);
-               double draft_vTP1_price=0;
-               double tp_in_pips=0;
-               double RvR=0;
+
+               //Initiate the variables used for calculation.
+               //double draft_vTP1_price=0;
+
+               string InfoBoxOrderPrefix;
+               bool OKToTrade = true;
 
                int cmd=-1;
 
+               //----- THIS WHOLE SECTION OUTLINES WHAT HAPPENS PRIOR TO TRADE ENTRY -------
+               //Calculate the initial placement of all the lines based on the box
+               //---if box is above the bid line then all orders should be a buylimit order. Setup the box such that the bottom of the box is the sl
                if(Bid>upperline)
                  {
                   cmd=OP_BUYLIMIT;
-                  openprice1=upperline;
+                  entryprice1=upperline;
                   sl=lowerline;
-                  stop=(openprice1-sl)/myPoint;
-                  tp=setTP(openprice1,2*stop);
+                  stop_in_pips=(entryprice1-sl)/myPoint;
+                  tp=entryprice1+2*(entryprice1-sl);
+
                  }
                else
+                  //--if box is below the bid line then all orders should be a sell limit order. Setup the box such that the top of the box is the sl
                   if(Bid<lowerline)
                     {
                      cmd=OP_SELLLIMIT;
-                     openprice1=lowerline;
+                     entryprice1=lowerline;
                      sl=upperline;
-                     stop=(sl-openprice1)/myPoint;
-                     tp=setTP(openprice1,-2*stop);
+                     stop_in_pips=(sl-entryprice1)/myPoint;
+                     tp=entryprice1-2*(sl-entryprice1);
+
                     }
 
-               if(ObjectFind("vTP1_"+strname)==-1 && isAlreadyEnter("_"+strname+"_")==false)
-                 {
-                  DrawTL("vTP1_"+strname,tp,backline,tp,frontline,clrYellow,STYLE_DASH,1);
-                  TextCreate(0,"InfoBox_"+strname,0,time1,sl,infobox,"Ariel",9,clrYellow,0.0,ANCHOR_LEFT_UPPER);
-                 }
-
-               // Check if V_Rectangle line exists
-               //bool vRectFound = ObjectFind("blueBoxTPName") != -1;
-               //double vRectPrice;
-
-               if(ObjectFind("blueBoxTPName") != -1 && ObjectFind("vTP1_"+strname) != -1)
-                 {
-                  // Get V_Rectangle price
-                  double vRectPrice = ObjectGet("blueBoxTPName",OBJPROP_PRICE1);
-                  ObjectSet("vTP1_"+strname,OBJPROP_PRICE1,vRectPrice);
-                  ObjectSet("vTP1_"+strname,OBJPROP_PRICE2,vRectPrice);
-
-                  // Delete V_Rectangle
-                  ObjectDelete("blueBoxTPName");
-                 }
-
-               tp=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
-
-               if(isAlreadyEnter("_"+strname+"_")==false && TimeCurrent()<=frontline)
-                 {
-
-                  draft_vTP1_price=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
-                  if(cmd==OP_BUYLIMIT)
-                     tp_in_pips=NormalizeDouble((draft_vTP1_price-openprice1)/myPoint,Digits);
                   else
-                     if(cmd==OP_SELLLIMIT)
-                        tp_in_pips=NormalizeDouble((openprice1-draft_vTP1_price)/myPoint,Digits);
-                  if(cmd>0)
-                     RvR=tp_in_pips/stop;
+                     //if current price is between the box upperline and lowerline then that is a market order. Setup box such that its a sell market order initially and the user can change the TP as needed into a buy market order
+                     if(Bid>lowerline && Bid<upperline)
+                       {
 
+                        entryprice1=Ask;
+                        sl=upperline;
+                        //calculate the SL in Pips for the Infobox and 2nd trade
+                        stop_in_pips=(sl-entryprice1)/myPoint;
+                        tp=entryprice1-2*(sl-entryprice1);
+
+                       }
+
+               //Provided trade has not been entered yet and the time for the box is still valid
+               if(isAlreadyEnter("_"+strname+"_")==false && TimeCurrent()<=frontline /*&& cmd != NULL*/)
+                 {
+                  //Once the initial requirements have been set from above, check if a TP1 line exists and that a order doesn't already executed. If so, create a new dashed TP1 line which is used for measurement prior to trade entry and a Infobox text.
+                  if(ObjectFind("vTP1_"+strname)==-1)
+                    {
+
+                     //requires tp to be set from above.
+                     DrawTL("vTP1_"+strname,tp,backline,tp,frontline,clrYellow,STYLE_DASH,1);
+
+                     //create a Infobox to be used to display the RvR and TP and SL amount.
+                     TextCreate(0,"InfoBox_"+strname,0,time1,sl,infobox,"Ariel",9,clrYellow,0.0,ANCHOR_LEFT_UPPER);
+
+                    }
+
+                  //Find the TP line price point and initiate that as tp
+                  tp=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
+
+                  //calculate the tp_in_pips if the TP1 line is above the top of the box
+                  if(tp>upperline && Bid>upperline)
+                    {
+                     tp_in_pips=NormalizeDouble((tp-entryprice1)/myPoint,Digits);
+                     InfoBoxOrderPrefix = "BUY LIMIT";
+                    }
+                  else
+                     // if the TP is in the wrong location (ie. below the box) then show error
+                     if(tp<upperline && Bid>upperline)
+                       {
+                        InfoBoxOrderPrefix = "ERROR";
+                        OKToTrade = false;
+                       }
+
+                  //calculate the tp_in_pips if the TP1 line below the box low.
+                  if(tp<lowerline && Bid<lowerline)
+                    {
+                     tp_in_pips=NormalizeDouble((entryprice1-tp)/myPoint,Digits);
+                     InfoBoxOrderPrefix = "SELL LIMIT";
+                    }
+                  else
+                     if(tp>lowerline && Bid<lowerline)
+                       {
+                        InfoBoxOrderPrefix = "ERROR";
+                        OKToTrade = false;
+                       }
+
+                  //When we want to place a market order then the box should be placed over the current bid/ask lines and it will calculate
+                  if(Bid>lowerline && Bid<upperline)
+                    {
+                     if(tp>Bid)
+                       {
+                        tp=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
+                        tp_in_pips=NormalizeDouble((tp-Bid)/myPoint,Digits);
+                        sl=lowerline;
+                        InfoBoxOrderPrefix = "BUY MARKET";
+                        cmd=OP_BUY;
+                       }
+                     else
+                       {
+                        tp=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
+                        tp_in_pips=NormalizeDouble((Bid-tp)/myPoint,Digits);  //should I replace with ask here?
+                        sl=upperline;
+                        InfoBoxOrderPrefix = "SELL MARKET";
+                        cmd=OP_SELL;
+                       }
+                    }
+                  //Calculate the RvR based off the above
+                  RvR=tp_in_pips/stop_in_pips;
+
+                  //calculate the risk of the trade entry. First check if the risk is either in whole lots or in percentage.
+                  //if the risk in the description doesn not have a '%' then do the following
                   if(StringFind(strlots,"%")!=-1)
                     {
                      double percent=StrToDouble(StringSubstr(strlots,0,StringFind(strlots,"%")));
                      double my_lots2;
                      if(Digits==3 || Digits==5)
-                        my_lots2=(AccountBalance()*percent*0.01)/(stop*myTickValue*10);
+                        my_lots2=(AccountBalance()*percent*0.01)/(stop_in_pips*myTickValue*10);
                      else
-                        my_lots2=(AccountBalance()*percent*0.01)/(stop*myTickValue);
+                        my_lots2=(AccountBalance()*percent*0.01)/(stop_in_pips*myTickValue);
                      my_lots=NormalizeDouble(my_lots2,digit_lot);
                     }
                   else
@@ -1054,55 +2025,132 @@ void OnTick()
                   if(my_lots>MarketInfo(Symbol(),MODE_MAXLOT))
                      my_lots=MarketInfo(Symbol(),MODE_MAXLOT);
 
-                  //Open the trade
-                  if(strlots!="")
-                     openticket1=Open_Trade(Symbol(),cmd,openprice1,my_lots,sl,tp,"T01_"+strname+"_"+TradeCode);
 
-                  infobox="SL: "+DoubleToStr(NormalizeDouble(stop,2),1)+" | TP: "+DoubleToStr(tp_in_pips,1)+" | RvR: "+DoubleToStr(RvR,1);
+                  //Once all the information has been set and the TP and SL are set and has found a lot size amount from the box description then it is good to go to enter a trade.
+                  //Check if box description is not empty as well as there is a command to execute.
+                  if(strlots!="" && OKToTrade==true)
+                    {
+
+                     //Execute the order
+                     openticket1=Open_Trade(Symbol(),cmd,entryprice1,my_lots,sl,tp,"T01_"+strname+"_"+TradeCode);
+                     Print("Open_trade. sl: "+sl+" tp: "+tp+" Openprice: "+entryprice1+" cmd: "+cmd);
+
+                    }
+                  //Now that we have a new trade in place. Overwrite the infobox with the calculations we have
+                  infobox=InfoBoxOrderPrefix+" SL: "+DoubleToStr(NormalizeDouble(stop_in_pips,2),1)+" | TP: "+DoubleToStr(tp_in_pips,1)+" | RvR: "+DoubleToStr(RvR,1);
+
 
                   if(openticket1>0)
                     {
+                     //Set off an alarm to notify that trade has been undertaken
                      if(cmd==OP_BUYLIMIT)
                         Alert("BUY LIMIT "+Symbol()+" "+strtf(Period())+" Date & Time: "+TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES)+" - "+WindowExpertName());
-                     else
-                        if(cmd==OP_SELLLIMIT)
-                           Alert("SELL LIMIT "+Symbol()+" "+strtf(Period())+" Date & Time: "+TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES)+" - "+WindowExpertName());
+                     if(cmd==OP_SELLLIMIT)
+                        Alert("SELL LIMIT "+Symbol()+" "+strtf(Period())+" Date & Time: "+TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES)+" - "+WindowExpertName());
+                     if(cmd==OP_SELL)
+                        Alert("SELL MARKET "+Symbol()+" "+strtf(Period())+" Date & Time: "+TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES)+" - "+WindowExpertName());
+                     if(cmd==OP_BUY)
+                        Alert("BUY MARKET "+Symbol()+" "+strtf(Period())+" Date & Time: "+TimeToStr(TimeCurrent(),TIME_DATE)+" "+TimeToStr(TimeCurrent(),TIME_MINUTES)+" - "+WindowExpertName());
 
+                     //Draw a new TP1 line which will be used for order management
                      DrawTL("vTP1_"+IntegerToString(openticket1),tp,backline,tp,frontline,clrYellow,STYLE_SOLID,2);
 
+                     //Removes the previous TP line used for measurements as it will be replaced with the line used for ordermanagement.
                      ObjectDelete("vTP1_"+strname);
 
+                     //Removes a object parameters so that we can not trigger another other.
+                     ObjectSetText(strname,"");
+                     strlots="";
+
+                     //Check to see if the Entry price is the same as the Box dimension. If not, readjust the box size.
+                     if(OrderSelect(openticket1, SELECT_BY_TICKET)==true)
+                       {
+                        if(cmd==OP_SELL)
+                          {
+
+                           ObjectSet(strname,OBJPROP_PRICE2,OrderOpenPrice());
+                          }
+                        else
+                           if(cmd==OP_BUY)
+                             {
+                              ObjectSet(strname,OBJPROP_PRICE1,OrderOpenPrice());
+                             }
+                       }
+                     else
+                        Print("OrderSelect returned the error of ",GetLastError());
+
+                     //If Pyramid trading is allowed then action
                      if(allowed_2nd_trade)
                        {
                         int cmd2=-1;
-                        if(cmd==OP_BUYLIMIT)
+                        //if the order is a buy order (limit or market)
+                        if(cmd==OP_BUYLIMIT || cmd==OP_BUY)
                           {
-                           openprice2=openprice1+(stop*myPoint);
-                           tp2=setTP(openprice1,2*stop);
-                           //If we want halfway between the TP and the entry then use this-
-                           //tp=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
-                           //openprice2=tp-(tp_in_pips*0.5*myPoint);
-                           stoploss2=openprice1-(0.5*stop*myPoint);
+                           //Set the entry for second trade at 1R distance from the first trade
+                           entryprice2=entryprice1+(entryprice1-sl);
+                           //Set the TP for 2nd trade at twice the distance from the first trade
+                           tp2=entryprice1+2*(entryprice1-sl);
+                           //Set the SL at half the distance between the first trade entry and SL
+                           stoploss2=entryprice1-0.5*(entryprice1-sl);
+
                           }
-                        else
-                           if(cmd==OP_SELLLIMIT)
-                             {
-                              openprice2=openprice1-(stop*myPoint);
-                              tp2=setTP(openprice1,-2*stop);
-                              //If we want halfway between the TP and the entry then use this-
-                              //tp=ObjectGet("vTP1_"+strname,OBJPROP_PRICE1);
-                              //openprice2=tp+(tp_in_pips*0.5*myPoint);
-                              stoploss2=openprice1+(0.5*stop*myPoint);
-                             }
-                        DrawTL("vOP2_"+IntegerToString(openticket1),openprice2,backline,openprice2,frontline,clrGreen,STYLE_SOLID,1);
-                        DrawTL("vvOP2_"+IntegerToString(openticket1),openprice2,backline,openprice2,frontline,clrNONE,STYLE_SOLID,1);
+                        //if the order is a sell order (limit or market)
+                        if(cmd==OP_SELLLIMIT || cmd==OP_SELL)
+                          {
+                           entryprice2=entryprice1-(sl-entryprice1);
+                           tp2=entryprice1-2*(sl-entryprice1);
+                           stoploss2=entryprice1+0.5*(sl-entryprice1);
+                          }
+
+                        //Draw all the second trade lines for trade management as required.
+                        //Trade entry for second trade
+                        DrawTL("vOP2_"+IntegerToString(openticket1),entryprice2,backline,entryprice2,frontline,clrGreen,STYLE_SOLID,1);
+                        //Not sure what this does TBH.
+                        DrawTL("vvOP2_"+IntegerToString(openticket1),entryprice2,backline,entryprice2,frontline,clrNONE,STYLE_SOLID,1);
+                        //Stop loss of second trade
                         DrawTL("vSL2_"+IntegerToString(openticket1),stoploss2,backline,stoploss2,frontline,clrBrown,STYLE_SOLID,2);
-                        DrawTL("vTP2_"+IntegerToString(openticket1),tp2,backline,tp2,frontline,clrBrown,STYLE_SOLID,2);
+                        //Take profit of second trade
+                        DrawTL("vTP2_"+IntegerToString(openticket1),tp2,middleofbox,tp2,frontline,clrBrown,STYLE_SOLID,2);
+                        //Vertical Link line on the left hand side for ease of knowing which lines are related to which trade.
+                        DrawTL("Link_"+IntegerToString(openticket1),lowerline,backline,tp,backline,clrBrown,STYLE_DOT,1);
+
 
                         ObjectSet("vTP1_"+IntegerToString(openticket1),OBJPROP_TIME1,MathMin(time1,time2));
-                        ObjectSet("vTP1_"+IntegerToString(openticket1),OBJPROP_TIME2,MathMax(time1,time2));
+
+                        //Draw the TP1 line only to the middle of the box so that it is easier to grab and move rather then TP1 and TP2 lines overlapping each other
+                        ObjectSet("vTP1_"+IntegerToString(openticket1),OBJPROP_TIME2,middleofbox);
 
                        }
+
+                     //Take screenshot of the Trade entry
+                     CaptureScreenshot(OrderTicket(),"1.6_" + GetPeriodName(PERIOD_CURRENT) + "_"  +Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     long idchart=0;
+                     // Screnshot M15 trade
+                     idchart = OpenNewChart(PERIOD_M15);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.5_" + GetPeriodName(PERIOD_M15) + "_"    +Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot H1 trade
+                     idchart = OpenNewChart(PERIOD_H1);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.4_" + GetPeriodName(PERIOD_H1) +  "_"  +TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot H4 trade
+                     idchart = OpenNewChart(PERIOD_H4);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.3_" + GetPeriodName(PERIOD_H4) +  "_" + Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot D1 trade
+                     idchart = OpenNewChart(PERIOD_D1);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.2_" + GetPeriodName(PERIOD_D1) +  "_" + Symbol()+ "_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+                     // Screnshot W1 trade
+                     idchart = OpenNewChart(PERIOD_W1);
+                     SetTemplate(idchart);
+                     CaptureScreenshotHigherTf(idchart,OrderTicket(),"1.1_" + GetPeriodName(PERIOD_W1) +  "_" + Symbol()+ "_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeEntry");
+                     CloseChart(idchart);
+
                     }
                   TextChange(0,"InfoBox_"+strname,infobox);
                   TextMove(0,"InfoBox_"+strname,time1,sl);
@@ -1110,8 +2158,10 @@ void OnTick()
                   ObjectSet("vTP1_"+strname,OBJPROP_TIME2,MathMax(time1,time2));
                   ObjectSet("vSL2_"+strname,OBJPROP_TIME1,MathMin(time1,time2));
                   ObjectSet("vSL2_"+strname,OBJPROP_TIME2,MathMax(time1,time2));
-
                  }
+
+
+
               }
             if(ObjectGet(strname,OBJPROP_COLOR)==clrGold)
               {
@@ -1133,16 +2183,20 @@ void OnTick()
                TextDelete(0,strname);
               }
            }
+
+         //what is this even for?
          if(StringFind(strname,"vTP1_Rectangle")!=-1)
            {
             if(ObjectFind(0,StringSubstr(strname,5,StringLen(strname)))==-1)
               {
+               Print("wtf");
                ObjectDelete(strname);
               }
            }
         }
      }
 
+   refreshcharttime=TimeCurrent()+60;
 /// Blue box trading ---------------------------------------------------
    string TargetBoxName;
 // Loop through all objects on chart
@@ -1349,7 +2403,7 @@ void OnTick()
                   // Remove blue dashed line object
                   //ObjectDelete(0, "DashLine");
 
-                  Alert("Box Found!");
+                  //Alert("Box Found!");
 
 
 
@@ -1359,366 +2413,13 @@ void OnTick()
            }
         }
      }
-   if(TimeCurrent()>=refreshcharttime)
-     {
-      //refresh chart every minute
-      refreshcharttime=TimeCurrent()+60;
 
-      CurrentSupDem=iCustom(Symbol(),PERIOD_M15,"II_SupDemMOD_DarkBG_SolidFill_Sow",
-                            //---- iCustom values ---
-                            // ENUM_TIMEFRAMES forced_tf=
-                            PERIOD_CURRENT,
-                            //bool draw_zones=
-                            true,
-                            //bool solid_zones=
-                            true,
-                            //bool solid_retouch=
-                            true,
-                            //bool recolor_retouch=
-                            true,
-                            //bool recolor_weak_retouch =
-                            true,
-                            //bool zone_strength =
-                            true,
-                            //bool no_weak_zones =
-                            true,
-                            //bool draw_edge_price=
-                            false,
-                            //int zone_width =
-                            1,
-                            //bool zone_fibs =
-                            false,
-                            //int fib_style=
-                            0,
-                            //bool HUD_on=
-                            false,
-                            //bool timer_on=
-                            true,
-                            //int layer_zone=
-                            0,
-                            //int layer_HUD =
-                            20,
-                            //int corner_HUD=
-                            2,
-                            //int pos_x =
-                            100,
-                            //int pos_y =
-                            20,
-                            //bool alert_on=
-                            false,
-                            //bool alert_popup=
-                            false,
-                            //string alert_sound=
-                            "radar1.wav",
-                            //color color_sup_strong=
-                            C'67,78,92',
-                            //color color_sup_weak=
-                            C'74,74,74',
-                            //color color_sup_retouch=
-                            C'35,43,50',
-                            //color color_dem_strong =
-                            C'67,78,92',
-                            //color color_dem_weak=
-                            C'29,47,88',
-                            //color color_dem_retouch=
-                            C'29,47,88',
-                            //color color_fib=
-                            DodgerBlue,
-                            //color color_HUD_tf=
-                            Navy,
-                            //color color_arrow_up =
-                            SeaGreen,
-                            //color color_arrow_dn =
-                            Crimson,
-                            //color color_timer_back=
-                            DarkGray,
-                            //color color_timer_bar =
-                            Red,
-                            //color color_shadow=
-                            DarkSlateGray,
 
-                            //bool limit_zone_vis=
-                            false,
-                            //bool same_tf_vis=
-                            true,
-                            //bool show_on_m1 =
-                            false,
-                            //bool show_on_m5 =
-                            false,
-                            //bool show_on_m15 =
-                            false,
-                            //bool show_on_m30 =
-                            false,
-                            //bool show_on_h1 =
-                            false,
-                            //bool show_on_h4 =
-                            false,
-                            //bool show_on_d1 =
-                            false,
-                            //bool show_on_w1 =
-                            false,
-                            //bool show_on_mn =
-                            false,
-
-                            //int Price_Width=
-                            1,
-                            //int time_offset=
-                            0,
-                            //bool globals=
-                            false,
-                            //string BoxSuffix=
-                            "15M",
-                            //bool show_hollow=
-                            false,
-                            //OBJPROP_STYLE dash_style=
-                            STYLE_DASHDOT,
-                            0,// iCustom line index
-
-                            0  // iCustom shift
-                           );
-
-      H1SupDem=iCustom(Symbol(),PERIOD_H1,"II_SupDemMOD_DarkBG_SolidFill_Sow",
-                       //---- iCustom values ---
-                       // ENUM_TIMEFRAMES forced_tf=
-                       PERIOD_CURRENT,//in order to draw indi right this must be set to period curret despite the icustom calling the Period_1H
-                       //bool draw_zones=
-                       true,
-                       //bool solid_zones=
-                       true,
-                       //bool solid_retouch=
-                       true,
-                       //bool recolor_retouch=
-                       true,
-                       //bool recolor_weak_retouch =
-                       true,
-                       //bool zone_strength =
-                       true,
-                       //bool no_weak_zones =
-                       true,
-
-                       //bool draw_edge_price=
-                       false,
-                       //int zone_width =
-                       1,
-
-                       //bool zone_fibs =
-                       false,
-                       //int fib_style=
-                       0,
-
-                       //bool HUD_on=
-                       false,
-                       //bool timer_on=
-                       true,
-                       //int layer_zone=
-                       0,
-                       //int layer_HUD =
-                       20,
-                       //int corner_HUD=
-                       2,
-                       //int pos_x =
-                       100,
-                       //int pos_y =
-                       20,
-
-                       //bool alert_on=
-                       false,
-                       //bool alert_popup=
-                       false,
-
-                       //string alert_sound=
-                       "radar1.wav",
-                       //color color_sup_strong=
-                       C'53,63,74',
-                       //color color_sup_weak=
-                       C'74,74,74',
-                       //color color_sup_retouch=
-                       C'35,43,50',
-                       //color color_dem_strong =
-                       C'53,63,74',
-                       //color color_dem_weak=
-                       C'29,47,88',
-                       //color color_dem_retouch=
-                       C'29,47,88',
-                       //color color_fib=
-                       DodgerBlue,
-                       //color color_HUD_tf=
-                       Navy,
-                       //color color_arrow_up =
-                       SeaGreen,
-                       //color color_arrow_dn =
-                       Crimson,
-                       //color color_timer_back=
-                       DarkGray,
-                       //color color_timer_bar =
-                       Red,
-                       //color color_shadow=
-                       DarkSlateGray,
-
-                       //bool limit_zone_vis=
-                       false,
-                       //bool same_tf_vis=
-                       true,
-                       //bool show_on_m1 =
-                       false,
-                       //bool show_on_m5 =
-                       false,
-                       //bool show_on_m15 =
-                       false,
-                       //bool show_on_m30 =
-                       false,
-                       //bool show_on_h1 =
-                       false,
-                       //bool show_on_h4 =
-                       false,
-                       //bool show_on_d1 =
-                       false,
-                       //bool show_on_w1 =
-                       false,
-                       //bool show_on_mn =
-                       false,
-                       //int Price_Width=
-                       1,
-                       //int time_offset=
-                       0,
-                       //bool globals=
-                       false,
-                       //string BoxSuffix=
-                       "H1",
-                       //bool show_hollow=
-                       true,
-                       //OBJPROP_STYLE dash_style=
-                       STYLE_DASHDOT,
-                       // iCustom line index
-                       0,
-                       // iCustom shift
-                       1
-                      );
-
-      H4SupDem=iCustom(Symbol(),PERIOD_H4,"II_SupDemMOD_DarkBG_SolidFill_Sow",
-                       //---- iCustom values ---
-                       // ENUM_TIMEFRAMES forced_tf=
-                       PERIOD_CURRENT,//in order to draw indi right this must be set to period curret despite the icustom calling the Period_1H
-                       //bool draw_zones=
-                       true,
-                       //bool solid_zones=
-                       true,
-                       //bool solid_retouch=
-                       true,
-                       //bool recolor_retouch=
-                       true,
-                       //bool recolor_weak_retouch =
-                       true,
-                       //bool zone_strength =
-                       true,
-                       //bool no_weak_zones =
-                       true,
-
-                       //bool draw_edge_price=
-                       false,
-                       //int zone_width =
-                       1,
-
-                       //bool zone_fibs =
-                       false,
-                       //int fib_style=
-                       0,
-
-                       //bool HUD_on=
-                       false,
-                       //bool timer_on=
-                       true,
-                       //int layer_zone=
-                       0,
-                       //int layer_HUD =
-                       20,
-                       //int corner_HUD=
-                       2,
-                       //int pos_x =
-                       100,
-                       //int pos_y =
-                       20,
-
-                       //bool alert_on=
-                       false,
-                       //bool alert_popup=
-                       false,
-
-                       //string alert_sound=
-                       "radar1.wav",
-                       //color color_sup_strong=
-                       C'53,63,74',
-                       //color color_sup_weak=
-                       C'74,74,74',
-                       //color color_sup_retouch=
-                       C'35,43,50',
-                       //color color_dem_strong =
-                       C'53,63,74',
-                       //color color_dem_weak=
-                       C'29,47,88',
-                       //color color_dem_retouch=
-                       C'29,47,88',
-                       //color color_fib=
-                       DodgerBlue,
-                       //color color_HUD_tf=
-                       Navy,
-                       //color color_arrow_up =
-                       SeaGreen,
-                       //color color_arrow_dn =
-                       Crimson,
-                       //color color_timer_back=
-                       DarkGray,
-                       //color color_timer_bar =
-                       Red,
-                       //color color_shadow=
-                       DarkSlateGray,
-
-                       //bool limit_zone_vis=
-                       false,
-                       //bool same_tf_vis=
-                       true,
-                       //bool show_on_m1 =
-                       false,
-                       //bool show_on_m5 =
-                       false,
-                       //bool show_on_m15 =
-                       false,
-                       //bool show_on_m30 =
-                       false,
-                       //bool show_on_h1 =
-                       false,
-                       //bool show_on_h4 =
-                       false,
-                       //bool show_on_d1 =
-                       false,
-                       //bool show_on_w1 =
-                       false,
-                       //bool show_on_mn =
-                       false,
-                       //int Price_Width=
-                       1,
-                       //int time_offset=
-                       0,
-                       //bool globals=
-                       false,
-                       //string BoxSuffix=
-                       "H4",
-                       //bool show_hollow=
-                       true,
-                       //OBJPROP_STYLE dash_style=
-                       STYLE_DASH,
-                       // iCustom line index
-                       0,
-                       // iCustom shift
-                       1
-                      );
-
-     }
+  }
 
 
 //----
 
-  }
 //+------------------------------------------------------------------+
 //+------------------------------------------------------------------+
 //+------------------------------------------------------------------+
@@ -1728,8 +2429,9 @@ void OnTick()
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
-//|                                                                  |
+//|     FUNCTION DEPRECATED                                                             |
 //+------------------------------------------------------------------+
+/*
 void ModifySDLevels(int Counter,string LevelPrefix,datetime time_1,double price_1,datetime time_2,double price_2,color SD_level_colour) //function to increase the length of valid SD levels.
   {
    int i=1;
@@ -1780,6 +2482,8 @@ void ModifySDLevels(int Counter,string LevelPrefix,datetime time_1,double price_
         }
      }
   }
+ */
+
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -1879,14 +2583,14 @@ void CleanAbsorbedLevels(string SymbolCheck,
                   //modify the level so that at the point of most penetrations the box stops pulling to the right.
                   if(LevelPrefix=="Supply_")
                     {
-                     ModifySDLevels(0,"Supply_"+i,NULL,NULL,iTime(SymbolCheck,PeriodCheck,x),NULL,whoredOutSupplyLevelColour);
+                     //ModifySDLevels(0,"Supply_"+i,NULL,NULL,iTime(SymbolCheck,PeriodCheck,x),NULL,whoredOutSupplyLevelColour);
                      //break the for loop early to save processing power
                      x=1;
                     }
                   else
                      if(LevelPrefix=="Demand_")
                        {
-                        ModifySDLevels(0,"Demand_"+i,NULL,NULL,iTime(SymbolCheck,PeriodCheck,x),NULL,whoredOutDemandLevelColour);
+                        //ModifySDLevels(0,"Demand_"+i,NULL,NULL,iTime(SymbolCheck,PeriodCheck,x),NULL,whoredOutDemandLevelColour);
                         //break the for loop early to save processing power
                         x=1;
                        }
@@ -1933,7 +2637,7 @@ bool RectangleCreate(const long            chart_ID=0,        // chart's ID
       if(!ObjectCreate(chart_ID,name,OBJ_RECTANGLE,sub_window,time_1,price_1,time_2,price_2))
         {
          Print(__FUNCTION__,
-               ": failed to create a rectangle! Error code = ",GetLastError());
+               ": failed to create a rectangle! Error code = ",ErrorDescription(GetLastError()));
          return(false);
         }
       //--- set rectangle color
@@ -2001,7 +2705,7 @@ bool RectangleDelete(const long   chart_ID=0,       // chart's ID
    if(!ObjectDelete(chart_ID,name))
      {
       Print(__FUNCTION__,
-            ": failed to delete rectangle! Error code = ",GetLastError());
+            ": failed to delete rectangle! Error code = ",ErrorDescription(GetLastError()));
       return(false);
      }
 //--- successful execution
@@ -2036,7 +2740,7 @@ bool ArrowCreate(const ENUM_OBJECT       direction=OBJ_ARROW_DOWN,//Arrow direct
       if(!ObjectCreate(chart_ID,name,direction,sub_window,time,price))
         {
          Print(__FUNCTION__,
-               ": failed to create \"Arrow Down\" sign! Error code = ",GetLastError());
+               ": failed to create \"Arrow Down\" sign! Error code = ",ErrorDescription(GetLastError()));
          return(false);
         }
       //--- anchor type
@@ -2119,7 +2823,7 @@ int CountOpenOrders(int direction)
   }
 //+------------------------------------------------------------------+
 //+-------------------Close Trades by Symbol()-------------------------+
-/*
+/*--- Seems as if this is no longer used.
 int CloseTrades(int direction)
   {
    int j;
@@ -2213,16 +2917,11 @@ int CloseTrades(int direction)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss)
+bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss, double EntryPrice = NULL)
   {
    int try;
    string strerr="";
 
-   /*
-   logb("myTicket: ",myTicket);
-   logb("ProfitTarget: ",ProfitTarget);
-   logb("StopLoss: ",StopLoss);
-   */
 
 
    if(OrderSelect(myTicket,SELECT_BY_TICKET,MODE_TRADES)==False)
@@ -2233,13 +2932,9 @@ bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss)
       ProfitTarget = OrderTakeProfit();
    if(StopLoss==NULL || StopLoss=="")
       StopLoss = OrderStopLoss();
+   if(EntryPrice==NULL || EntryPrice=="")
+      EntryPrice = OrderOpenPrice();
 
-   /*
-   logb("OrderTicket(): ",OrderTicket());
-   logb("OrderComment(): ",OrderComment());
-   logb("ProfitTarget2: ",ProfitTarget);
-   logb("StopLoss2: ",StopLoss);
-   */
 
    if(ProfitTarget != OrderTakeProfit() || StopLoss != OrderClosePrice())
      {
@@ -2260,13 +2955,13 @@ bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss)
                     {
                      if(OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble(StopLoss,Digits),NormalizeDouble(ProfitTarget,Digits),OrderExpiration()))
                        {
-                        //logb("-----Order successfully modified-----");
                         return(true);
                        }
                      else
                        {
                         err=GetLastError();
                         strerr=IntegerToString(err);
+                        CaptureScreenshot(myTicket,Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_OrderModifyError");
                         Print("OrderModify Error # "+strerr+" : ",ErrorDescription(err));
                        }
                     }
@@ -2305,15 +3000,18 @@ int Open_Trade(string curr,int cmd,double price,double lot,double sl,double tp,s
       for(retry=1; retry<=number_retry_open_trade; retry++)
         {
          RefreshRates();
-         //if(ChartScreenShot(0,curr+" "+TimeGMT()+" "+Day()+" "+Year(),Screenshot_Width,Screenshot_Height,ALIGN_LEFT)) Print("We've saved the screenshot");
          ticket=OrderSend(curr,cmd,lot,price,slippage,0,0,comm,magic_number,0,colour);
          if(ticket>0)
+           {
             break;
+            Print("Trade entered successfully");
+           }
          else
            {
             err=GetLastError();
             strerr=IntegerToString(err);
             Print("OrderSend Error # "+strerr+" : ",ErrorDescription(err));
+            Print("retry: "+retry+" ticket: "+ticket+" curr: "+curr+" cmd: "+cmd+" lot: "+lot+" price: "+price+" sl: "+sl+" tp: "+tp+" comm: "+comm);
            }
         }
      }
@@ -2322,15 +3020,18 @@ int Open_Trade(string curr,int cmd,double price,double lot,double sl,double tp,s
       for(retry=1; retry<=number_retry_open_trade; retry++)
         {
          RefreshRates();
-         //if(ChartScreenShot(0,curr+" "+TimeGMT()+" "+Day()+" "+Year(),Screenshot_Width,Screenshot_Height,ALIGN_LEFT)) Print("We've saved the screenshot");
          ticket=OrderSend(curr,cmd,lot,price,slippage,sl,tp,comm,magic_number,0,colour);
          if(ticket>0)
+           {
             break;
+            Print("Trade entered successfully");
+           }
          else
            {
             err=GetLastError();
             strerr=IntegerToString(err);
             Print("OrderSend Error # "+strerr+" : ",ErrorDescription(err));
+            Print("retry: "+retry+" ticket: "+ticket+" curr: "+curr+" cmd: "+cmd+" lot: "+lot+" price: "+price+" sl: "+sl+" tp: "+tp+" comm: "+comm);
            }
         }
      }
@@ -2342,7 +3043,7 @@ int Open_Trade(string curr,int cmd,double price,double lot,double sl,double tp,s
          if(OrderSelect(ticket,SELECT_BY_TICKET,MODE_TRADES))
             for(retry=1; retry<=number_retry_open_trade; retry++)
               {
-               //logb("     tradeopened");
+               Print("Trade entered successfully 2");
                if(ModifyProfitTarget(ticket,tp,sl))
                   break;
               }
@@ -2478,7 +3179,7 @@ bool TextCreate(const long              chart_ID=0,               // chart's ID
    if(!ObjectCreate(chart_ID,name,OBJ_TEXT,sub_window,time,price))
      {
       Print(__FUNCTION__,
-            ": failed to create \"Text\" object! Error code = ",GetLastError());
+            ": failed to create '"+name+"' object! Error code = ",ErrorDescription(GetLastError()));
       return(false);
      }
 //--- set the text
@@ -2524,7 +3225,7 @@ bool TextMove(const long   chart_ID=0,  // chart's ID
    if(!ObjectMove(chart_ID,name,0,time,price))
      {
       Print(__FUNCTION__,
-            ": failed to move the anchor point! Error code = ",GetLastError());
+            ": failed to move the anchor point! Error code = ",ErrorDescription(GetLastError()));
       return(false);
      }
 //--- successful execution
@@ -2543,7 +3244,7 @@ bool TextChange(const long   chart_ID=0,  // chart's ID
    if(!ObjectSetString(chart_ID,name,OBJPROP_TEXT,text))
      {
       Print(__FUNCTION__,
-            ": failed to change the text! Error code = ",GetLastError());
+            ": failed to change the text! Error code = ",ErrorDescription(GetLastError()));
       return(false);
      }
 //--- successful execution
@@ -2561,7 +3262,7 @@ bool TextDelete(const long   chart_ID=0,  // chart's ID
    if(!ObjectDelete(chart_ID,name))
      {
       Print(__FUNCTION__,
-            ": failed to delete \"Text\" object! Error code = ",GetLastError());
+            ": failed to delete \"Text\" object! Error code = ",ErrorDescription(GetLastError()));
       return(false);
      }
 //--- successful execution
@@ -2620,7 +3321,7 @@ void OnChartEvent(const int id,         // Event identifier
             //Move chart to new location
             bool res=ChartNavigate(0,CHART_END,-barShift+50);
             if(!res)
-               Print("Navigate failed. Error = ",GetLastError());
+               Print("Navigate failed. Error = ",ErrorDescription(GetLastError()));
             ChartRedraw();
            }
         }
@@ -2629,22 +3330,662 @@ void OnChartEvent(const int id,         // Event identifier
 
 //+------------------------------------------------------------------+
 
-/*
 //+------------------------------------------------------------------+
-void CaptureScreenshot(string filename)
+//| Create folders and Generate screenshots                          |
+//+------------------------------------------------------------------+
+void CaptureScreenshot(int TradeID, string filename)
   {
-   if(ChartScreenShot(0,"something.gif",Screenshot_Width,Screenshot_Height,ALIGN_LEFT))
+   string Foldername = TradeID+"_"+Symbol();
+   CreateFolder(Foldername,false);
+
+   if(WindowScreenShot(Foldername+"\\"+filename+".gif",Screenshot_Width,Screenshot_Height))
      {
-      Print("We've saved the screenshot");
-      logb("Screenshot pumped");
+      Print("Screenshot captured: "+filename);
+
      }
    else
      {
       err=GetLastError();
       string strerr=IntegerToString(err);
-      Print("ChartScreenshot Error # "+strerr+" : ",ErrorDescription(err));
-      logb("ChartScreenshot Error # "+strerr+" : ",ErrorDescription(err));
+      Print("Screenshot error:"+strerr);
+     }
+
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Generate screenshot for higher tf                                |
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void CaptureScreenshotHigherTf(long chartid,int TradeID, string filename)
+  {
+
+
+   string Foldername = TradeID+"_"+Symbol();
+   ChartScreenShot(chartid,Foldername+"\\"+filename+".gif",Screenshot_Width,Screenshot_Height);
+
+  }
+
+
+
+//+------------------------------------------------------------------+
+//| Try creating a folder and display a message about that           |
+//+------------------------------------------------------------------+
+bool CreateFolder(string folder_path,bool common_flag)
+  {
+   int flag=common_flag?FILE_COMMON:0;
+   string working_folder;
+//--- define the full path depending on the common_flag parameter
+   if(common_flag)
+      working_folder=TerminalInfoString(TERMINAL_COMMONDATA_PATH)+"\\MQL4\\Files";
+   else
+      working_folder=TerminalInfoString(TERMINAL_DATA_PATH)+"\\MQL4\\Files";
+//--- debugging message
+   PrintFormat("folder_path=%s",folder_path);
+//--- attempt to create a folder relative to the MQL5\Files path
+   if(FolderCreate(folder_path,flag))
+     {
+      //--- display the full path for the created folder
+      PrintFormat("Created the folder %s",working_folder+"\\"+folder_path);
+      //--- reset the error code
+      ResetLastError();
+      //--- successful execution
+      return true;
+     }
+   else
+      PrintFormat("Failed to create the folder %s. Error code %d",working_folder+folder_path,ErrorDescription(GetLastError()));
+//--- execution failed
+   return false;
+  }
+//+------------------------------------------------------------------+
+
+
+//+------------------------------------------------------------------+
+//| Create the button                                                |
+//+------------------------------------------------------------------+
+bool ButtonCreate(const long              chart_ID=0,               // chart's ID
+                  const string            name="Button",            // button name
+                  const int               sub_window=0,             // subwindow index
+                  const int               x=0,                      // X coordinate
+                  const int               y=0,                      // Y coordinate
+                  const int               width=50,                 // button width
+                  const int               height=18,                // button height
+                  const ENUM_BASE_CORNER  corner=CORNER_LEFT_UPPER, // chart corner for anchoring
+                  const string            text="Button",            // text
+                  const string            font="Arial",             // font
+                  const int               font_size=10,             // font size
+                  const color             clr=clrBlack,             // text color
+                  const color             back_clr=C'236,233,216',  // background color
+                  const color             border_clr=clrNONE,       // border color
+                  const bool              state=false,              // pressed/released
+                  const bool              back=false,               // in the background
+                  const bool              selection=false,          // highlight to move
+                  const bool              hidden=true,              // hidden in the object list
+                  const long              z_order=0)                // priority for mouse click
+  {
+//--- reset the error value
+   ResetLastError();
+//--- create the button
+   if(!ObjectCreate(chart_ID,name,OBJ_BUTTON,sub_window,0,0))
+     {
+      Print(__FUNCTION__,
+            ": failed to create the button "+name+"! Error code = ",ErrorDescription(GetLastError()));
+      return(false);
+     }
+//--- set button coordinates
+   ObjectSetInteger(chart_ID,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YDISTANCE,y);
+//--- set button size
+   ObjectSetInteger(chart_ID,name,OBJPROP_XSIZE,width);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YSIZE,height);
+//--- set the chart's corner, relative to which point coordinates are defined
+   ObjectSetInteger(chart_ID,name,OBJPROP_CORNER,corner);
+//--- set the text
+   ObjectSetString(chart_ID,name,OBJPROP_TEXT,text);
+//--- set text font
+   ObjectSetString(chart_ID,name,OBJPROP_FONT,font);
+//--- set font size
+   ObjectSetInteger(chart_ID,name,OBJPROP_FONTSIZE,font_size);
+//--- set text color
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+//--- set background color
+   ObjectSetInteger(chart_ID,name,OBJPROP_BGCOLOR,back_clr);
+//--- set border color
+   ObjectSetInteger(chart_ID,name,OBJPROP_BORDER_COLOR,border_clr);
+//--- display in the foreground (false) or background (true)
+   ObjectSetInteger(chart_ID,name,OBJPROP_BACK,back);
+//--- set button state
+   ObjectSetInteger(chart_ID,name,OBJPROP_STATE,state);
+//--- enable (true) or disable (false) the mode of moving the button by mouse
+   ObjectSetInteger(chart_ID,name,OBJPROP_SELECTABLE,selection);
+   ObjectSetInteger(chart_ID,name,OBJPROP_SELECTED,selection);
+//--- hide (true) or display (false) graphical object name in the object list
+   ObjectSetInteger(chart_ID,name,OBJPROP_HIDDEN,hidden);
+//--- set the priority for receiving the event of a mouse click in the chart
+   ObjectSetInteger(chart_ID,name,OBJPROP_ZORDER,z_order);
+//--- successful execution
+   return(true);
+  }
+
+//+------------------------------------------------------------------+
+//| Change button text                                               |
+//+------------------------------------------------------------------+
+bool ButtonTextChange(const long   chart_ID=0,    // chart's ID
+                      const string name="Button", // button name
+                      const string text="Text")   // text
+  {
+//--- reset the error value
+   ResetLastError();
+//--- change object text
+   if(!ObjectSetString(chart_ID,name,OBJPROP_TEXT,text))
+     {
+      Print(__FUNCTION__,
+            ": failed to change the text! Error code = ",ErrorDescription(GetLastError()));
+      return(false);
+     }
+//--- successful execution
+   return(true);
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|  Manages the color and behavior of the buttons on the screen    |
+//+------------------------------------------------------------------+
+void ManageButtons()
+  {
+   int i;
+   string strname;
+   bool temp;
+
+//---If 'Indicator OFF' levels is pressed then hide all levels
+   if(ObjectGetInteger(0,"Button-ShowLevels",OBJPROP_STATE)==true)
+     {
+      //Disable all other time frames
+      ObjectSetInteger(0,"Button-15M",OBJPROP_STATE,True);
+      ObjectSetInteger(0,"Button-H1",OBJPROP_STATE,True);
+      ObjectSetInteger(0,"Button-H4",OBJPROP_STATE,True);
+      ObjectSetInteger(0,"Button-D1",OBJPROP_STATE,True);
+
+      //Set global variable so the button state persists even after changing TF.
+      GlobalVariableSet(magic_id+"Button-ShowLevels",true);
+
+      //Change the text to say 'ff' on button
+      ButtonTextChange(0,"Button-ShowLevels","OFF");
+
+      //--- set background color of button
+      ObjectSetInteger(0,"Button-ShowLevels",OBJPROP_BGCOLOR,clrBlueViolet);
+
+      /*
+            //Go through all the objects and hide the ones that are the levels.
+            for(i=0; i<ObjectsTotal(); i++)
+              {
+               strname=ObjectName(0,i);
+               //if(StringFind(strname,"II_Logo_0")!=-1)
+               //  {
+               ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_NO_PERIODS);
+               //Print(strname+" Disabled");
+               //  }
+              }
+              */
+     }
+   else
+     {
+
+      //Get the status of the buttons from the global variable and set it as the current button status.
+      /*
+      ObjectSetInteger(0,"Button-15M",OBJPROP_STATE,GlobalVariableGet(magic_id+"Button-15M"));
+      ObjectSetInteger(0,"Button-H1",OBJPROP_STATE,GlobalVariableGet(magic_id+"Button-H1"));
+      ObjectSetInteger(0,"Button-H4",OBJPROP_STATE,GlobalVariableGet(magic_id+"Button-H4"));
+      ObjectSetInteger(0,"Button-D1",OBJPROP_STATE,GlobalVariableGet(magic_id+"Button-D1"));
+      */
+      GlobalVariableSet(magic_id+"Button-ShowLevels",false);
+      ButtonTextChange(0,"Button-ShowLevels","Indicators ON");
+      ObjectSetInteger(0,"Button-ShowLevels",OBJPROP_BGCOLOR,clrBlack);
+      /*
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0")!=-1)
+           {
+         ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_ALL_PERIODS);
+           }
+        }
+      */
+
+     }
+
+
+
+
+//--- Disable all 15M levels
+   if(ObjectGetInteger(0,"Button-15M",OBJPROP_STATE)==True)
+     {
+      GlobalVariableSet(magic_id+"Button-15M",true);
+      ButtonTextChange(0,"Button-15M","OFF");
+      //--- set background color
+      ObjectSetInteger(0,"Button-15M",OBJPROP_BGCOLOR,clrBlueViolet);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_15")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_NO_PERIODS);
+           }
+        }
+     }
+   else
+     {
+      GlobalVariableSet(magic_id+"Button-15M",false);
+      ButtonTextChange(0,"Button-15M","15M");
+      ObjectSetInteger(0,"Button-15M",OBJPROP_BGCOLOR,clrBlack);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_15")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_ALL_PERIODS);
+           }
+        }
+     }
+
+//---Disable all H1 levels
+   if(ObjectGetInteger(0,"Button-H1",OBJPROP_STATE)==True)
+     {
+      GlobalVariableSet(magic_id+"Button-H1",true);
+      ButtonTextChange(0,"Button-H1","OFF");
+      //--- set background color
+      ObjectSetInteger(0,"Button-H1",OBJPROP_BGCOLOR,clrBlueViolet);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_H1")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_NO_PERIODS);
+           }
+        }
+     }
+   else
+     {
+      GlobalVariableSet(magic_id+"Button-H1",false);
+      ButtonTextChange(0,"Button-H1","H1");
+      ObjectSetInteger(0,"Button-H1",OBJPROP_BGCOLOR,clrBlack);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_H1")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_ALL_PERIODS);
+           }
+        }
+     }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+   if(ObjectGetInteger(0,"Button-H4",OBJPROP_STATE)==True)
+     {
+      GlobalVariableSet(magic_id+"Button-H4",true);
+      ButtonTextChange(0,"Button-H4","OFF");
+      //--- set background color
+      ObjectSetInteger(0,"Button-H4",OBJPROP_BGCOLOR,clrBlueViolet);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_H4")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_NO_PERIODS);
+           }
+        }
+     }
+   else
+     {
+      GlobalVariableSet(magic_id+"Button-H4",false);
+      ButtonTextChange(0,"Button-H4","H4");
+      ObjectSetInteger(0,"Button-H4",OBJPROP_BGCOLOR,clrBlack);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_H4")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_ALL_PERIODS);
+           }
+        }
+     }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+   if(ObjectGetInteger(0,"Button-D1",OBJPROP_STATE)==True)
+     {
+      GlobalVariableSet(magic_id+"Button-D1",true);
+      ButtonTextChange(0,"Button-D1","OFF");
+      //--- set background color
+      ObjectSetInteger(0,"Button-D1",OBJPROP_BGCOLOR,clrBlueViolet);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_D1")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_NO_PERIODS);
+           }
+        }
+     }
+   else
+     {
+      GlobalVariableSet(magic_id+"Button-D1",false);
+      ButtonTextChange(0,"Button-D1","D1");
+      ObjectSetInteger(0,"Button-D1",OBJPROP_BGCOLOR,clrBlack);
+      for(i=0; i<ObjectsTotal(); i++)
+        {
+         strname=ObjectName(0,i);
+         if(StringFind(strname,"II_Logo_0_D1")!=-1)
+           {
+            ObjectSet(strname,OBJPROP_TIMEFRAMES,OBJ_ALL_PERIODS);
+           }
+        }
+     }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+   if(ObjectGetInteger(0,"Button-EnableRules",OBJPROP_STATE)==True && ObjectFind(0,"TradeRules1")!=-1)
+     {
+      ButtonTextChange(0,"Button-EnableRules","Rules OFF");
+      ObjectSetInteger(0,"Button-EnableRules",OBJPROP_BGCOLOR,clrBlueViolet);
+      TextDelete(0,"TradeRules1");
+      TextDelete(0,"TradeRules2");
+      TextDelete(0,"TradeRules3");
+      TextDelete(0,"TradeRules4");
+      TextDelete(0,"TradeRules5");
+      TextDelete(0,"TradeRules6");
+      TextDelete(0,"TradeRules7");
+     }
+   else
+     {
+      if(ObjectGetInteger(0,"Button-EnableRules",OBJPROP_STATE)==False && ObjectFind(0,"TradeRules1")==-1)
+        {
+         DrawRulesOnScreen();
+        }
      }
   }
 //+------------------------------------------------------------------+
-*/
+
+//+------------------------------------------------------------------+
+//| Create a text label                                              |
+//+------------------------------------------------------------------+
+bool LabelCreate(const long              chart_ID=0,               // chart's ID
+                 const string            name="Label",             // label name
+                 const int               sub_window=0,             // subwindow index
+                 const int               x=0,                      // X coordinate
+                 const int               y=0,                      // Y coordinate
+                 const ENUM_BASE_CORNER  corner=CORNER_LEFT_UPPER, // chart corner for anchoring
+                 const string            text="Label",             // text
+                 const string            font="Arial",             // font
+                 const int               font_size=10,             // font size
+                 const color             clr=clrRed,               // color
+                 const double            angle=0.0,                // text slope
+                 const ENUM_ANCHOR_POINT anchor=ANCHOR_LEFT_UPPER, // anchor type
+                 const bool              back=false,               // in the background
+                 const bool              selection=false,          // highlight to move
+                 const bool              hidden=true,              // hidden in the object list
+                 const long              z_order=0)                // priority for mouse click
+  {
+//--- reset the error value
+   ResetLastError();
+//--- create a text label
+   if(!ObjectCreate(chart_ID,name,OBJ_LABEL,sub_window,0,0))
+     {
+      Print(__FUNCTION__,
+            ": failed to create text label "+name+"! Error code = ",ErrorDescription(GetLastError()));
+      return(false);
+     }
+//--- set label coordinates
+   ObjectSetInteger(chart_ID,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YDISTANCE,y);
+//--- set the chart's corner, relative to which point coordinates are defined
+   ObjectSetInteger(chart_ID,name,OBJPROP_CORNER,corner);
+//--- set the text
+   ObjectSetString(chart_ID,name,OBJPROP_TEXT,text);
+//--- set text font
+   ObjectSetString(chart_ID,name,OBJPROP_FONT,font);
+//--- set font size
+   ObjectSetInteger(chart_ID,name,OBJPROP_FONTSIZE,font_size);
+//--- set the slope angle of the text
+   ObjectSetDouble(chart_ID,name,OBJPROP_ANGLE,angle);
+//--- set anchor type
+   ObjectSetInteger(chart_ID,name,OBJPROP_ANCHOR,anchor);
+//--- set color
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+//--- display in the foreground (false) or background (true)
+   ObjectSetInteger(chart_ID,name,OBJPROP_BACK,back);
+//--- enable (true) or disable (false) the mode of moving the label by mouse
+   ObjectSetInteger(chart_ID,name,OBJPROP_SELECTABLE,selection);
+   ObjectSetInteger(chart_ID,name,OBJPROP_SELECTED,selection);
+//--- hide (true) or display (false) graphical object name in the object list
+   ObjectSetInteger(chart_ID,name,OBJPROP_HIDDEN,hidden);
+//--- set the priority for receiving the event of a mouse click in the chart
+   ObjectSetInteger(chart_ID,name,OBJPROP_ZORDER,z_order);
+//--- successful execution
+   return(true);
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void DrawRulesOnScreen()
+  {
+   long x_distance;
+   long y_distance;
+//--- set window size
+   if(!ChartGetInteger(0,CHART_WIDTH_IN_PIXELS,0,x_distance))
+     {
+      Print("Failed to get the chart width! Error code = ",ErrorDescription(GetLastError()));
+
+     }
+   if(!ChartGetInteger(0,CHART_HEIGHT_IN_PIXELS,0,y_distance))
+     {
+      Print("Failed to get the chart height! Error code = ",ErrorDescription(GetLastError()));
+
+     }
+
+   int x=(int)x_distance/32;
+   int y=(int)y_distance/32;
+   ButtonTextChange(0,"Button-EnableRules","Rules ON");
+   ObjectSetInteger(0,"Button-EnableRules",OBJPROP_BGCOLOR,clrBlack);
+   LabelCreate(0,"TradeRules1",0,10,y+50,CORNER_LEFT_UPPER,Rule1,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+   LabelCreate(0,"TradeRules2",0,10,y+70,CORNER_LEFT_UPPER,Rule2,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+   LabelCreate(0,"TradeRules3",0,10,y+90,CORNER_LEFT_UPPER,Rule3,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+   LabelCreate(0,"TradeRules4",0,10,y+110,CORNER_LEFT_UPPER,Rule4,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+   LabelCreate(0,"TradeRules5",0,10,y+130,CORNER_LEFT_UPPER,Rule5,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+   LabelCreate(0,"TradeRules6",0,10,y+150,CORNER_LEFT_UPPER,Rule6,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+   LabelCreate(0,"TradeRules7",0,10,y+170,CORNER_LEFT_UPPER,Rule7,"Arial",10,clrWhiteSmoke,0.0,ANCHOR_LEFT_UPPER,false,false,0);
+
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+long OpenNewChart(ENUM_TIMEFRAMES _period)
+  {
+   long NewId =   ChartOpen(Symbol(),_period);
+   if(NewId ==0)
+     {
+      return 0;
+     }
+   else
+     {
+      return NewId;
+     }
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool CloseChart(long _id)
+  {
+   bool result= ChartClose(_id);
+   return result;
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void SetTemplate(long _id)
+  {
+//----------- START - SET UP CHART FURNISHING -------------
+//--- enable object create events
+   ChartSetInteger(_id,CHART_EVENT_OBJECT_CREATE,true);
+//--- enable object delete events
+   ChartSetInteger(_id,CHART_EVENT_OBJECT_DELETE,true);
+//--- Remove grid
+   ChartSetInteger(_id,CHART_SHOW_GRID,0,false);
+//--Chart should be candlesticks
+   ChartSetInteger(_id,CHART_MODE,0,CHART_CANDLES);
+//--Chart to set shift
+   ChartSetInteger(_id,CHART_SHIFT,0,true);
+//--Chart scale
+   ChartSetInteger(_id,CHART_SCALE,0,2);
+//---Chat show ask line
+   ChartSetInteger(_id,CHART_SHOW_ASK_LINE,0,1);
+
+
+
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+string GetPeriodName(ENUM_TIMEFRAMES period)
+  {
+   if(period==PERIOD_CURRENT)
+      period=Period();
+//---
+   switch(period)
+     {
+      case PERIOD_M1:
+         return("M1");
+      case PERIOD_M5:
+         return("M5");
+      case PERIOD_M15:
+         return("M15");
+      case PERIOD_M30:
+         return("M30");
+      case PERIOD_H1:
+         return("H1");
+      case PERIOD_H4:
+         return("H4");
+      case PERIOD_D1:
+         return("D1");
+      case PERIOD_W1:
+         return("W1");
+      case PERIOD_MN1:
+         return("MN1");
+     }
+//---
+   return("unknown period");
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+int   GetOpenOrder(int magic,string simbolo)
+  {
+   int Totale=0;
+   int  iOrders=OrdersTotal(), i;
+   for(i=iOrders-1; i>=0; i--)
+     {
+      if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES))
+        {
+
+         if(OrderMagicNumber() == magic  && OrderSymbol()==simbolo)
+           {
+            Totale= Totale +1;
+           }
+        }
+
+     }
+
+   return Totale;
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void   CheckOrderForSendTrade(int magic,string simbolo,int difference)
+  {
+   int Totale=0;
+   int  iOrders=OrdersTotal(), i;
+   for(i=iOrders-1; i>=0; i--)
+     {
+      if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES))
+        {
+
+         if(OrderMagicNumber() == magic  && OrderSymbol()==simbolo && OrderType() <2)
+           {
+            // this for avoid to send again all trade when stop mt4
+            if(TimeCurrent() - OrderOpenTime() < difference)
+              {
+               SendScreen(channeltlg,0,Symbol()+ "| Type " + IntegerToString(OrderType()) + "| Price Open " + DoubleToString(OrderOpenPrice(),Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + magic);
+              }
+           }
+        }
+
+     }
+
+
+  }
+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+int SendScreen(ulong channeL,int chartid,string commento,string nomefile)
+  {
+   if(ChartScreenShot(chartid,nomefile + ".png",Screenshot_Width,Screenshot_Height,ALIGN_RIGHT))
+      string filename = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG";
+   Print(GetLastError());
+   string photo_id;
+   return bot.SendPhoto(photo_id,channeL,nomefile + ".PNG",commento,false,10000);
+   FileDelete(TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG");
+  }
+//+------------------------------------------------------------------+
+
+
+void WriteHeader()
+  {
+   string Header = "OrderId,DateTime,OrderType,Symbol,Lots,TpInPips,SlInPips,Rvr,Trade Outcome,Current Account,Comments,Trade OutComments";
+
+
+   WriteFile(logfile,Header);
+
+  }
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void WriteFile(string name,string text)
+  {
+
+
+   int handlelog=FileOpen(name,FILE_CSV|FILE_WRITE|FILE_READ,",");
+   if(handlelog<1)
+     {
+      Print(GetLastError());
+     }
+   FileSeek(handlelog, 0, SEEK_END);
+
+   FileWrite(handlelog,text);
+   FileFlush(handlelog);
+   FileClose(handlelog);
+  }
+//+------------------------------------------------------------------+

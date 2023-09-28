@@ -25,6 +25,7 @@ Updates required in order of priority -
 
 GOLIVE - If there is an existing order without box then the journal goes crazy trying to Delete something and captures tradedelete alot
 GOLIVE - Exotic currencies / instruments are not working.
+GOLIVE - Green TP is not movable
 TODO - Set the state off the buttons off the globalvariables if set on the OnInit() fucntion
 TODO - If BlueBox is removed then remove the blueline too
 BUG - If second order is disabled then all orders go fucked up and do not work. Needs a deep review of why this happens. Some logic missing to ignore if second trade is live.
@@ -108,7 +109,7 @@ DONE - Changing TF when current pending order is in place triggers the EA to cre
 Two strategies -
 - Trade on 3:1 RvR
 - Trade on compression zones
-- Trade grid style on liquaity gaps. 
+- Trade grid style on liquaity gaps.
 - Hunt for large candles with low volume behind them on their reversal
 
 
@@ -228,14 +229,14 @@ string magic_id;
 //+------------------------------------------------------------------+
 int OnInit()
   {
-  
-  
-  if (!FileIsExist(logfile))
-  {
-   WriteHeader();  
-  }
-  
-   //bot.Token(InpToken);
+
+
+   if(!FileIsExist(logfile))
+     {
+      WriteHeader();
+     }
+
+//bot.Token(InpToken);
    SetPoint();
    if(Digits==3 || Digits==5)
       slippage*=10;
@@ -1010,13 +1011,13 @@ void FindClosedTrades()
                   //Send order to infobox
                   TextCreate(0,"InfoBoxClosed_"+str2,0,ObjectGet(str2,OBJPROP_TIME1),MathMax(entry,sl),infobox,"Ariel",9,clrYellow,0.0,ANCHOR_LEFT_UPPER);
                   //   string Header = "OrderId,DateTime,OrderType,Symbol,Lots,TpInPips,SlInPips,Rvr,Trade Outcome,Current Account,Comments,Trade OutComments";
-                  
-                  string resulttocsv=IntegerToString(orderticket) + "," + TimeToString(OrderOpenTime()) + "," + IntegerToString(ordertype) + "," + Symbol() + "," + DoubleToString(orderlots,2) + "," + 
-                  DoubleToString(tp_in_pips,Digits()) + "," + DoubleToString(stop_in_pips,Digits()) + "," + DoubleToString(RvR,2) + "," + 
-                  DoubleToString((profit>0)?NormalizeDouble(MathAbs(OrderClosePrice()-OrderOpenPrice())/myPoint,Digits):NormalizeDouble(-MathAbs(OrderClosePrice()-OrderOpenPrice()),Digits())/myPoint,Digits)+ "," + DoubleToString(AccountBalance(),Digits());
+
+                  string resulttocsv=IntegerToString(orderticket) + "," + TimeToString(OrderOpenTime()) + "," + IntegerToString(ordertype) + "," + Symbol() + "," + DoubleToString(orderlots,2) + "," +
+                                     DoubleToString(tp_in_pips,Digits()) + "," + DoubleToString(stop_in_pips,Digits()) + "," + DoubleToString(RvR,2) + "," +
+                                     DoubleToString((profit>0)?NormalizeDouble(MathAbs(OrderClosePrice()-OrderOpenPrice())/myPoint,Digits):NormalizeDouble(-MathAbs(OrderClosePrice()-OrderOpenPrice()),Digits())/myPoint,Digits)+ "," + DoubleToString(AccountBalance(),Digits());
                   WriteFile(logfile,resulttocsv);
-                  
-                  
+
+
                   // ------------------------------------------------------------
                  }
               }
@@ -2200,8 +2201,10 @@ void OnTick()
      }
 
    refreshcharttime=TimeCurrent()+60;
+
 /// Green box trading ---------------------------------------------------
    string TargetBoxName;
+   double Furthest_away_point;
 // Loop through all objects on chart
    for(int i=ObjectsTotal()-1; i>=0; i--)
      {
@@ -2332,32 +2335,41 @@ void OnTick()
          double greenBoxRight = ObjectGet(objectName, OBJPROP_TIME2);
          double greenBoxBottom = ObjectGet(objectName, OBJPROP_PRICE2);
 
+         //Determine the upper and lower line of the box by understandig which is the Min or max value.
+         //Find the line which is the furthest away from the Bid
+         if(MathAbs(greenBoxTop-Bid) > MathAbs(greenBoxBottom-Bid))
+            Furthest_away_point = greenBoxTop;
+         else
+            Furthest_away_point = greenBoxBottom;
+
          double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
 
 
 
-         if(Bid < greenBoxBottom)
+         if(Bid < Furthest_away_point)
            {
             TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
             double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
             double lineLeft = greenBoxLeft;
             double lineRight = greenBoxRight;
 
-            DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
+            if(ObjectFind("greenBoxTPName") == -1)
+               DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
 
            }
 
-         if(Bid > greenBoxBottom)
+         if(Bid > Furthest_away_point)
            {
             TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
             double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
             double lineLeft = greenBoxLeft;
             double lineRight = greenBoxRight;
 
-            DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
+            if(ObjectFind("greenBoxTPName") == -1)
+               DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
 
            }
-         
+
          // Loop through objects again to find TargetBoxName
          for(int j=ObjectsTotal()-1; j>=0; j--)
            {
@@ -3957,13 +3969,16 @@ int SendScreen(ulong channeL,int chartid,string commento,string nomefile)
       string filename = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG";
    Print(GetLastError());
    string photo_id;
-   //return bot.SendPhoto(photo_id,channeL,nomefile + ".PNG",commento,false,10000);
+//return bot.SendPhoto(photo_id,channeL,nomefile + ".PNG",commento,false,10000);
    return
-   FileDelete(TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG");
+      FileDelete(TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG");
   }
 //+------------------------------------------------------------------+
 
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 void WriteHeader()
   {
    string Header = "OrderId,DateTime,OrderType,Symbol,Lots,TpInPips,SlInPips,Rvr,Trade Outcome,Current Account,Comments,Trade OutComments";

@@ -23,23 +23,22 @@ You meed to manutally insert the magic number which is unique to that chart. Oth
 
 Updates required in order of priority -
 
-TODO - Set the state off the buttons off the globalvariables if set on the OnInit() fucntion
+GOLIVE - If there is an existing order without box then the journal goes crazy trying to Delete something and captures tradedelete alot
 GOLIVE - Exotic currencies / instruments are not working.
+TODO - Set the state off the buttons off the globalvariables if set on the OnInit() fucntion
+TODO - If BlueBox is removed then remove the blueline too
 BUG - If second order is disabled then all orders go fucked up and do not work. Needs a deep review of why this happens. Some logic missing to ignore if second trade is live.
-BUG - You can turn the indicators off but you can't turn them back on.
 BUG - Stop creating a folder everytime we want to take screenshot
 BUG - Need a new line for the SL of TP1 to be moveable once the trade has been entered
+BUG - Fix all the console errors when compliling
 BUG - If second trade is entered and SL1 and SL2 go to BE but then if I move the location of the SL lower then evertime price crosses the entry price of 2nd trade then it moves SL1 and SL2 to BE again.
 FEATURE - Rewrite whole EA into MT5
 FEATURE - The InfoBox should move a bit higher when selling so that its a bit easier to read.
 FEATURE - Once price comes into the box and rebounds then detect a low. Put the SL1 and SL2 into the low of that price rather then directly to the BE point.
-FEATURE - Take screenshots of HTF - W,D,4H,1H everytime before taking a trade
-FEATURE - Get the mobile notifications going
-FEATURE - Send screenshots notifications to the mobile
 FEATURE - Show trade history. Once trade is closed then show a line connecting the start and end points.
-FEATURE - Record all new trades in a TEXT file and their history and show graphically on screen when adding the EA.
+FEATURE (NICE TO HAVE) - Record all new trades in a TEXT file and their history and show graphically on screen when adding the EA.
 FEATURE - Draw a box over large candles to trade their liqiudity gaps. Create a series of orders inside that box when you know that there will be a significant drop from a previously fast moving candle.
-FEATURE - Consider using a pennant/flag indicator on HTF to find squeezes.
+FEATURE (NICE TO HAVE) - Consider using a pennant/flag indicator on HTF to find squeezes.
 FEATURE - Restore our engulfing pattern detector and find out englufing patterns to exit from if they go against the trade.
 FEATURE - Upon confluence between the three levels - supply on all three timeframes then a judgement system must be in place. Judgement system has the last call to make on if to allow this trade to continue.
 BUG - Remove all the implicit conversion from number to string and possible loss of data due to type conversion.
@@ -58,6 +57,10 @@ GOLIVE - Should we allow the second trade stop loss to be adjustable for percent
  - If not, we need to delete the order. Otherwise retain the order.
  - Retained order must readjust the TP price to closest SD level.
  - Make the trade have its own SL lines rather then disable the box. [Need good reasons for this.]
+DONE - You can turn the indicators off but you can't turn them back on.
+DONE - Get the mobile notifications going
+DONE - Send screenshots notifications to the mobile
+DONE - Take screenshots of HTF - W,D,4H,1H everytime before taking a trade
 DONE - Must improve the look of the levels - 1H levels to be long dashes with no fill
 DONE - The text of 'H1' should show further away
 CANCELLED - Need historical view of levels in indicator
@@ -2197,17 +2200,17 @@ void OnTick()
      }
 
    refreshcharttime=TimeCurrent()+60;
-/// Blue box trading ---------------------------------------------------
+/// Green box trading ---------------------------------------------------
    string TargetBoxName;
 // Loop through all objects on chart
    for(int i=ObjectsTotal()-1; i>=0; i--)
      {
       string objectName = ObjectName(i);
 
-      // Check if current object color is blue
-      if(ObjectGetInteger(0, objectName, OBJPROP_COLOR) == clrBlue && ObjectGetInteger(0, objectName, OBJPROP_TYPE) == OBJ_RECTANGLE)
+      // Check if current object color is green
+      if(ObjectGetInteger(0, objectName, OBJPROP_COLOR) == clrGreen && ObjectGetInteger(0, objectName, OBJPROP_TYPE) == OBJ_RECTANGLE)
         {
-         // Object is blue
+         // Object is green
 
          //initiaize the 1M chart
          CurrentSupDem=iCustom(Symbol(),PERIOD_M1,"II_SupDemMOD_DarkBG_SolidFill_Sow",
@@ -2324,34 +2327,34 @@ void OnTick()
                               );
 
          // Get coordinates
-         double blueBoxLeft = ObjectGet(objectName, OBJPROP_TIME1);
-         double blueBoxTop = ObjectGet(objectName, OBJPROP_PRICE1);
-         double blueBoxRight = ObjectGet(objectName, OBJPROP_TIME2);
-         double blueBoxBottom = ObjectGet(objectName, OBJPROP_PRICE2);
+         double greenBoxLeft = ObjectGet(objectName, OBJPROP_TIME1);
+         double greenBoxTop = ObjectGet(objectName, OBJPROP_PRICE1);
+         double greenBoxRight = ObjectGet(objectName, OBJPROP_TIME2);
+         double greenBoxBottom = ObjectGet(objectName, OBJPROP_PRICE2);
 
-         double blueBoxHeight = MathAbs(blueBoxTop - blueBoxBottom);
+         double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
 
 
 
-         if(Bid < blueBoxBottom)
+         if(Bid < greenBoxBottom)
            {
             TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
-            double lineDistance = blueBoxBottom - (blueBoxHeight * 2);
-            double lineLeft = blueBoxLeft;
-            double lineRight = blueBoxRight;
+            double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
+            double lineLeft = greenBoxLeft;
+            double lineRight = greenBoxRight;
 
-            DrawTL("blueBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrBlue,STYLE_DASH,1);
+            DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
 
            }
 
-         if(Bid > blueBoxBottom)
+         if(Bid > greenBoxBottom)
            {
             TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
-            double lineDistance = blueBoxBottom + (blueBoxHeight * 2);
-            double lineLeft = blueBoxLeft;
-            double lineRight = blueBoxRight;
+            double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
+            double lineLeft = greenBoxLeft;
+            double lineRight = greenBoxRight;
 
-            DrawTL("blueBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrBlue,STYLE_DASH,1);
+            DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
 
            }
          
@@ -2373,34 +2376,34 @@ void OnTick()
                double targetBoxRight = ObjectGet(innerObjectName, OBJPROP_TIME2);
                double targetBoxBottom = ObjectGet(innerObjectName, OBJPROP_PRICE2);
 
-               // Check if TargetBoxName is within blue box
-               if(targetBoxLeft >= blueBoxLeft &&
-                  targetBoxTop <= blueBoxTop &&
-                  targetBoxRight <= blueBoxRight &&
-                  targetBoxBottom >= blueBoxBottom)
+               // Check if TargetBoxName is within green box
+               if(targetBoxLeft >= greenBoxLeft &&
+                  targetBoxTop <= greenBoxTop &&
+                  targetBoxRight <= greenBoxRight &&
+                  targetBoxBottom >= greenBoxBottom)
                  {
-                  // Target box is within blue box
+                  // Target box is within green box
 
                   // Create new red box over TargetBoxName
 
-                  RectangleCreate(0, "RedBox", 0, targetBoxLeft, targetBoxTop, blueBoxRight, targetBoxBottom, clrRed, 0, true, false, false);
+                  RectangleCreate(0, "RedBox", 0, targetBoxLeft, targetBoxTop, greenBoxRight, targetBoxBottom, clrRed, 0, true, false, false);
 
-                  // Get description of blue box
-                  string blueBoxDesc = ObjectDescription(objectName);
+                  // Get description of green box
+                  string greenBoxDesc = ObjectDescription(objectName);
 
-                  // Set red box description to match blue box
-                  ObjectSetString(0, "RedBox", OBJPROP_TEXT, blueBoxDesc);
+                  // Set red box description to match green box
+                  ObjectSetString(0, "RedBox", OBJPROP_TEXT, greenBoxDesc);
 
-                  // Change blue box to transparent dashed line
+                  // Change green box to transparent dashed line
                   ObjectSetInteger(0, objectName, OBJPROP_COLOR, clrViolet);
                   ObjectSetInteger(0, objectName, OBJPROP_BACK, false);
                   ObjectSetInteger(0, objectName, OBJPROP_FILL, false);
                   //ObjectSetInteger(0, objectName, OBJPROP_BORDER_COLOR, clrViolet);
                   //ObjectSetInteger(0, objectName, OBJPROP_STYLE, STYLE_DASHDOTDOT);
 
-                  //TODO -Take the blue dashed line and replace value with value for yellow
+                  //TODO -Take the green dashed line and replace value with value for yellow
 
-                  // Remove blue dashed line object
+                  // Remove green dashed line object
                   //ObjectDelete(0, "DashLine");
 
                   //Alert("Box Found!");
@@ -2509,7 +2512,7 @@ void CleanAbsorbedLevels(string SymbolCheck,
       if(ObjectFind(StringConcatenate(LevelPrefix,IntegerToString(i)))!=-1)
         {
          //if so check to see their colour is not one of the whoredOut colors
-         if(ObjectGet(StringConcatenate(LevelPrefix,IntegerToString(i)),OBJPROP_COLOR)!=whoredOutDemandLevelColour || ObjectGet(StringConcatenate(LevelPrefix,IntegerToString(i)),OBJPROP_COLOR)!=whoredOutSupplyLevelColour) //Check to see if the level is the entry colour of Blue showing fresh level
+         if(ObjectGet(StringConcatenate(LevelPrefix,IntegerToString(i)),OBJPROP_COLOR)!=whoredOutDemandLevelColour || ObjectGet(StringConcatenate(LevelPrefix,IntegerToString(i)),OBJPROP_COLOR)!=whoredOutSupplyLevelColour) //Check to see if the level is the entry colour of green showing fresh level
            {
             //Get the top left price of level
             price_1=ObjectGet(StringConcatenate(LevelPrefix,IntegerToString(i)),OBJPROP_PRICE1);

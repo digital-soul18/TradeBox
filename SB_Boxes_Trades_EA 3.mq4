@@ -126,8 +126,8 @@ Two strategies -
 
 #include <stdlib.mqh>
 //#include <debug_inc.mqh>
-#include <Telegram.mqh>
-CCustomBot bot;
+//#include <Telegram.mqh>
+//CCustomBot bot;
 
 #property copyright "Copyright Sow Behl 2020"
 #property link      ""
@@ -232,7 +232,7 @@ int OnInit()
    WriteHeader();  
   }
   
-   bot.Token(InpToken);
+   //bot.Token(InpToken);
    SetPoint();
    if(Digits==3 || Digits==5)
       slippage*=10;
@@ -943,7 +943,7 @@ void FindClosedTrades()
                   ObjectSet("vTP2_"+IntegerToString(orderticket),OBJPROP_STYLE,STYLE_DASHDOTDOT);
                   ObjectSet("vTP2_"+IntegerToString(orderticket),OBJPROP_TIME2,OrderCloseTime());
                   CaptureScreenshot(orderticket,"4_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeClose_TP2"+"_"+str2);
-                  SendScreen(channeltlg,0,Symbol()+" Order Type " + IntegerToString(OrderType()) + " Price Close " + DoubleToString(OrderClosePrice(),Digits()) + " Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                  //SendScreen(channeltlg,0,Symbol()+" Order Type " + IntegerToString(OrderType()) + " Price Close " + DoubleToString(OrderClosePrice(),Digits()) + " Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
                   if(allowed_2nd_trade)
                     {
                      DeletePending2(str2);
@@ -962,7 +962,7 @@ void FindClosedTrades()
                   ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_STYLE,STYLE_DASHDOTDOT);
                   ObjectSet("vTP1_"+IntegerToString(orderticket),OBJPROP_TIME2,OrderCloseTime());
                   CaptureScreenshot(orderticket,"4_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeClose_TP1"+"_"+str2);
-                  SendScreen(channeltlg,0,"Order Type " + IntegerToString(OrderType()) + " Price Close " + DoubleToString(OrderClosePrice(),Digits()) + " Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                  //SendScreen(channeltlg,0,"Order Type " + IntegerToString(OrderType()) + " Price Close " + DoubleToString(OrderClosePrice(),Digits()) + " Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
                   ObjectSet(str2,OBJPROP_COLOR,clrBlue);
                   ObjectSet(str2,OBJPROP_TIME2,OrderCloseTime());
 
@@ -1351,7 +1351,7 @@ void BoxMoved()
                            //Modify the order to move the Stop loss to break even point but keep take profit as is.
                            ModifyProfitTarget(FirstTradeID,NULL,upperline);
                            CaptureScreenshot(FirstTradeID,"2_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move1stTradeToBE");
-                           SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(upperline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                           //SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(upperline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
                            FirstSL = FirstOpenPrice;
                           }
 
@@ -1366,7 +1366,7 @@ void BoxMoved()
                            ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE2,upperline);
 
                            CaptureScreenshot(FirstTradeID,"3_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move2ndTradeToBE");
-                           SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(upperline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                           //SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(upperline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
 
 
                            if(slprice2 != Orderstoploss)
@@ -1388,7 +1388,7 @@ void BoxMoved()
                            ObjectSet(str2,OBJPROP_COLOR,clrGreenYellow);
                            ModifyProfitTarget(FirstTradeID,NULL,lowerline); //This might have a bug in it. Need to look at original order first
                            CaptureScreenshot(FirstTradeID,"2_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move1stTradeToBE");
-                           SendScreen(channeltlg,0,Symbol()+ "| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(lowerline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                           //SendScreen(channeltlg,0,Symbol()+ "| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(lowerline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
                            FirstSL = FirstOpenPrice;
                           }
 
@@ -1405,7 +1405,7 @@ void BoxMoved()
                            ObjectSet("vSL2_"+IntegerToString(Orderticket),OBJPROP_PRICE2,lowerline);
 
                            CaptureScreenshot(FirstTradeID,"3_"+Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_Move2ndTradeToBE");
-                           SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(lowerline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
+                           //SendScreen(channeltlg,0,Symbol()+"| Type " + IntegerToString(OrderType()) + "| Breakeven At " + DoubleToString(lowerline,Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + OrderMagicNumber());
 
                            if(slprice2 != Orderstoploss)
                              {
@@ -3933,7 +3933,7 @@ void   CheckOrderForSendTrade(int magic,string simbolo,int difference)
             // this for avoid to send again all trade when stop mt4
             if(TimeCurrent() - OrderOpenTime() < difference)
               {
-               SendScreen(channeltlg,0,Symbol()+ "| Type " + IntegerToString(OrderType()) + "| Price Open " + DoubleToString(OrderOpenPrice(),Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + magic);
+               //SendScreen(channeltlg,0,Symbol()+ "| Type " + IntegerToString(OrderType()) + "| Price Open " + DoubleToString(OrderOpenPrice(),Digits()) + "| Volume " + DoubleToString(OrderLots(),Digits()),Symbol() + "_" + Period() + "_" + magic);
               }
            }
         }
@@ -3954,7 +3954,8 @@ int SendScreen(ulong channeL,int chartid,string commento,string nomefile)
       string filename = TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG";
    Print(GetLastError());
    string photo_id;
-   return bot.SendPhoto(photo_id,channeL,nomefile + ".PNG",commento,false,10000);
+   //return bot.SendPhoto(photo_id,channeL,nomefile + ".PNG",commento,false,10000);
+   return
    FileDelete(TerminalInfoString(TERMINAL_DATA_PATH) + "\\MQL4\\Files\\"+ nomefile + ".PNG");
   }
 //+------------------------------------------------------------------+

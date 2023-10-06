@@ -23,11 +23,14 @@ You meed to manutally insert the magic number which is unique to that chart. Oth
 
 Updates required in order of priority -
 
+TODO - Readjust the greenline to the greenbox
+TODO - Support multiple greenbox orders
+TODO - If Greenbox is removed then remove the Greenline too
+TODO - If greenbox is removed then remove the M1 chart also
 GOLIVE - If there is an existing order without box then the journal goes crazy trying to Delete something and captures tradedelete alot
 GOLIVE - Exotic currencies / instruments are not working.
-GOLIVE - Green TP is not movable
 TODO - Set the state off the buttons off the globalvariables if set on the OnInit() fucntion
-TODO - If BlueBox is removed then remove the blueline too
+
 BUG - If second order is disabled then all orders go fucked up and do not work. Needs a deep review of why this happens. Some logic missing to ignore if second trade is live.
 BUG - Stop creating a folder everytime we want to take screenshot
 BUG - Need a new line for the SL of TP1 to be moveable once the trade has been entered
@@ -58,6 +61,7 @@ GOLIVE - Should we allow the second trade stop loss to be adjustable for percent
  - If not, we need to delete the order. Otherwise retain the order.
  - Retained order must readjust the TP price to closest SD level.
  - Make the trade have its own SL lines rather then disable the box. [Need good reasons for this.]
+DONE - Green TP is not movable
 DONE - You can turn the indicators off but you can't turn them back on.
 DONE - Get the mobile notifications going
 DONE - Send screenshots notifications to the mobile
@@ -229,7 +233,6 @@ string magic_id;
 //+------------------------------------------------------------------+
 int OnInit()
   {
-
 
    if(!FileIsExist(logfile))
      {
@@ -1941,6 +1944,8 @@ void OnTick()
 
                        }
 
+
+
                //Provided trade has not been entered yet and the time for the box is still valid
                if(isAlreadyEnter("_"+strname+"_")==false && TimeCurrent()<=frontline /*&& cmd != NULL*/)
                  {
@@ -1951,6 +1956,17 @@ void OnTick()
                      //requires tp to be set from above.
                      DrawTL("vTP1_"+strname,tp,backline,tp,frontline,clrYellow,STYLE_DASH,1);
 
+                     //check if TP for bluebox exists, replace
+                     if(ObjectFind("blueBoxTPName") != -1)
+                       {
+                        // Get V_Rectangle price
+                        double vRectPrice = ObjectGet("blueBoxTPName",OBJPROP_PRICE1);
+                        ObjectSet("vTP1_"+strname,OBJPROP_PRICE1,vRectPrice);
+                        ObjectSet("vTP1_"+strname,OBJPROP_PRICE2,vRectPrice);
+
+                        // Delete V_Rectangle
+                        ObjectDelete("blueBoxTPName");
+                       }
                      //create a Infobox to be used to display the RvR and TP and SL amount.
                      TextCreate(0,"InfoBox_"+strname,0,time1,sl,infobox,"Ariel",9,clrYellow,0.0,ANCHOR_LEFT_UPPER);
 
@@ -2336,39 +2352,45 @@ void OnTick()
          double greenBoxBottom = ObjectGet(objectName, OBJPROP_PRICE2);
 
          //Determine the upper and lower line of the box by understandig which is the Min or max value.
-         //Find the line which is the furthest away from the Bid
-         if(MathAbs(greenBoxTop-Bid) > MathAbs(greenBoxBottom-Bid))
-            Furthest_away_point = greenBoxTop;
-         else
-            Furthest_away_point = greenBoxBottom;
 
-         double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
-
-
-
-         if(Bid < Furthest_away_point)
+         if(ObjectFind("greenBoxTPName") == -1)
            {
-            TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
-            double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
-            double lineLeft = greenBoxLeft;
-            double lineRight = greenBoxRight;
+            //Find the line which is the furthest away from the Bid
+            if(MathAbs(greenBoxTop-Bid) > MathAbs(greenBoxBottom-Bid))
+               Furthest_away_point = greenBoxTop;
+            else
+               Furthest_away_point = greenBoxBottom;
 
-            if(ObjectFind("greenBoxTPName") == -1)
-               DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
+            double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
+            if(Bid < Furthest_away_point)
+              {
+               //Target first supply zone it sees
+               TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
 
+               //create a TP line for the system to target
+               double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
+
+               DrawTL("greenBoxTPName",lineDistance,greenBoxLeft,lineDistance,greenBoxRight,clrGreen,STYLE_DASH,1);
+
+              }
+
+            if(Bid > Furthest_away_point)
+              {
+               //Target first demand zone it sees
+               TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
+
+               //create a TP line for the system to target
+               double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
+
+               DrawTL("greenBoxTPName",lineDistance,greenBoxLeft,lineDistance,greenBoxRight,clrGreen,STYLE_DASH,1);
+
+              }
            }
+         //read greenboxtpname and if that is greater then big then make targetboxname "a|II_Logo_0_M1_DNZONE1" and vice versa
 
-         if(Bid > Furthest_away_point)
-           {
-            TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
-            double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
-            double lineLeft = greenBoxLeft;
-            double lineRight = greenBoxRight;
-
-            if(ObjectFind("greenBoxTPName") == -1)
-               DrawTL("greenBoxTPName",lineDistance,lineLeft,lineDistance,lineRight,clrGreen,STYLE_DASH,1);
-
-           }
+         //constatntly adjust the edges of the TP to match the edges of the box but not change the price location
+         ObjectSetInteger(0, "greenBoxTPName", OBJPROP_TIME1, greenBoxLeft);
+         ObjectSetInteger(0, "greenBoxTPName", OBJPROP_TIME2, greenBoxRight);
 
          // Loop through objects again to find TargetBoxName
          for(int j=ObjectsTotal()-1; j>=0; j--)
@@ -2380,19 +2402,24 @@ void OnTick()
               {
                // Get coordinates of TargetBoxName
 
-               //datetime time1=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME1)));
-               //datetime time2=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME2)));
-
                double targetBoxLeft = ObjectGet(innerObjectName, OBJPROP_TIME1);
                double targetBoxTop = ObjectGet(innerObjectName, OBJPROP_PRICE1);
                double targetBoxRight = ObjectGet(innerObjectName, OBJPROP_TIME2);
                double targetBoxBottom = ObjectGet(innerObjectName, OBJPROP_PRICE2);
+               double spread = MarketInfo(Symbol(), MODE_SPREAD);
+
+               printf("Height "+MathAbs(targetBoxTop - targetBoxBottom)/myPoint);
+               printf("TargetBoxName "+TargetBoxName);
+               printf("spread"+(Ask-Bid));
 
                // Check if TargetBoxName is within green box
                if(targetBoxLeft >= greenBoxLeft &&
                   targetBoxTop <= greenBoxTop &&
                   targetBoxRight <= greenBoxRight &&
-                  targetBoxBottom >= greenBoxBottom)
+                  targetBoxBottom >= greenBoxBottom &&
+                  MathAbs(targetBoxTop - targetBoxBottom)/Point >= 3 //ensure we are not entering any tiny SD levels.
+                 )
+
                  {
                   // Target box is within green box
 
@@ -3866,7 +3893,7 @@ void SetTemplate(long _id)
 //--Chart scale
    ChartSetInteger(_id,CHART_SCALE,0,2);
 //---Chat show ask line
-   ChartSetInteger(_id,CHART_SHOW_ASK_LINE,0,1);
+   ChartSetInteger(_id,CHART_SHOW_ASK_LINE,0,true);
 
 
 

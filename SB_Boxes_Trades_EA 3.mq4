@@ -403,8 +403,10 @@ int OnInit()
         {
 
          //Check the order belongs to this Symbol but also check that the trade has 'T01_' this also avoids the pyramid trade from having to enter a box for that.
-         if(OrderSymbol()==Symbol() && StringFind(OrderComment(),"T01_")!=-1)
+         if(OrderSymbol()==Symbol() && StringLen(OrderComment()) == 0)
+            //StringFind(OrderComment(),"T01_")!=-1)
            {
+            printf("order found without box");
             string str1=StringSubstr(OrderComment(),0,StringFind(OrderComment(),"_"+TradeCode));  //If the tradecode is found from the ordercomment then extract it's name without the "_SB002" trade code.
             int replaced = StringReplace(str1,"T01_","");
 
@@ -810,6 +812,38 @@ void OnDeinit(const int reason)
 
   }
 
+
+//+------------------------------------------------------------------+
+//| Delete any extra 'greenBoxTPName' which doesn't have any related green boxes|
+//+------------------------------------------------------------------+
+void DeleteExcessGreenTPLines()
+  {
+   if(ObjectFind("greenBoxTPName") != -1)
+     {
+      int totalGreenBoxes = 0;
+
+      // Loop through all objects on chart
+      for(int i=0; i<ObjectsTotal(); i++)
+        {
+         string objName = ObjectName(i);
+         // Check if object is a rectangle
+         if(ObjectGetInteger(0,objName,OBJPROP_TYPE) == OBJ_RECTANGLE && ObjectGetInteger(0, objName, OBJPROP_COLOR) == clrGreen)
+           {
+            totalGreenBoxes++;
+           }
+        }
+      // If no green boxes found, delete greenBoxTPName line
+      if(totalGreenBoxes == 0 && ObjectFind("greenBoxTPName") != -1)
+        {
+         ObjectDelete("greenBoxTPName");
+        }
+     }
+  }
+
+
+
+
+
 //+------------------------------------------------------------------+
 //| Checks to see if a trade already exists that has a certain comment  -
 //| SB 22 Feb - Not sure if this is relevant anymore. Could be replaced by a built in function I'm pretty sure.
@@ -1031,48 +1065,71 @@ void FindClosedTrades()
 //+------------------------------------------------------------------+
 //|  If box no longer exists on the screen then the trade order should also be deleted since it is no longer valid.
 //+------------------------------------------------------------------+
+// Function to delete trades after box breakout
 void DeleteTradeAfterBox()
   {
+// Loop variables
    int i;
    int x;
    int status;
+
+// Loop through all trades
    for(i=OrdersTotal()-1; i>=0; i--)
      {
+      // Select trade by position
       if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES)==True)
         {
+         // Check if trade matches symbol and magic number
          if(OrderSymbol()==Symbol() && OrderMagicNumber()==magic_number)
            {
+            // Parse trade comment to get trade code
             string str1=StringSubstr(OrderComment(),0,StringFind(OrderComment(),"_"+TradeCode));
             string str2=StringSubstr(str1,StringFind(str1,"_")+1);
+
+            // Convert trade code strings to datetimes
             datetime time1=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME1)));
             datetime time2=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME2)));
             datetime timex=MathMax(time1,time2);
 
+            // Check if current time past trade expiry
             if(TimeCurrent()>=timex+(Period()*60))
               {
+               // Status variable
                status=0;
-               //Take screenshot
+
+               // Take screenshot for record
                CaptureScreenshot(OrderTicket(),Symbol()+"_"+TimeYear(TimeCurrent())+"_"+TimeMonth(TimeCurrent())+"_"+TimeDay(TimeCurrent())+"_"+TimeMinute(TimeCurrent())+"_"+TimeSeconds(TimeCurrent())+"_TradeDelete");
+
+               // Try to delete order up to 5 times
                for(x = 5; x!= 0; x--)
                  {
+                  // Check if trade context is busy
                   while(IsTradeContextBusy() || !IsTradeAllowed())
                      Sleep(5000);
+
+                  // Try to delete order
                   status=OrderDelete(OrderTicket());
+
+                  // Break loop if successful
                   if(status==1)
                     {
                      break;
                     }
                  }
+
+               // Delete trade objects
                ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vOP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vSL2_"+IntegerToString(OrderTicket()));
-               //Leaving the TP1 and Link line as I think its good to have for reference.
+
+               // Leave some objects for reference
                ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_WIDTH,1);
                ObjectSet("vTP1_"+IntegerToString(OrderTicket()),OBJPROP_STYLE,STYLE_DASH);
-               //ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
-               //ObjectDelete("Link_"+IntegerToString(OrderTicket()));
+
+               // Change trade code object color
                ObjectSet(str2,OBJPROP_COLOR,clrMaroon);
+
               }
            }
         }
@@ -1857,6 +1914,7 @@ void OnTick()
    BoxMoved();       //Check if Box is moved
    SetPending2();  //Set second order trade
    ManageButtons(); //Manage the buttons for showing indicator
+   DeleteExcessGreenTPLines(); //delete the extra lines for showing the indicator
 
 //--- Bullish and Bearish engulfing pattern find
 
@@ -1898,6 +1956,7 @@ void OnTick()
                frontline=MathMax(time1,time2);
                middleofbox = (time2 - time1)/2+time1;
                backline=MathMin(time1,time2);
+
 
                //Initiate the variables used for calculation.
                //double draft_vTP1_price=0;
@@ -1957,10 +2016,10 @@ void OnTick()
                      DrawTL("vTP1_"+strname,tp,backline,tp,frontline,clrYellow,STYLE_DASH,1);
 
                      //check if TP for bluebox exists, replace
-                     if(ObjectFind("blueBoxTPName") != -1)
+                     if(ObjectFind("greenBoxTPName") != -1)
                        {
                         // Get V_Rectangle price
-                        double vRectPrice = ObjectGet("blueBoxTPName",OBJPROP_PRICE1);
+                        double vRectPrice = ObjectGet("greenBoxTPName",OBJPROP_PRICE1);
                         ObjectSet("vTP1_"+strname,OBJPROP_PRICE1,vRectPrice);
                         ObjectSet("vTP1_"+strname,OBJPROP_PRICE2,vRectPrice);
 
@@ -2352,16 +2411,22 @@ void OnTick()
          double greenBoxBottom = ObjectGet(objectName, OBJPROP_PRICE2);
 
          //Determine the upper and lower line of the box by understandig which is the Min or max value.
-
+         //if there is no greenbox TP line found then ...
          if(ObjectFind("greenBoxTPName") == -1)
            {
             //Find the line which is the furthest away from the Bid
             if(MathAbs(greenBoxTop-Bid) > MathAbs(greenBoxBottom-Bid))
+              {
                Furthest_away_point = greenBoxTop;
+              }
             else
+              {
                Furthest_away_point = greenBoxBottom;
+              }
 
             double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
+
+            //
             if(Bid < Furthest_away_point)
               {
                //Target first supply zone it sees
@@ -2385,8 +2450,11 @@ void OnTick()
                DrawTL("greenBoxTPName",lineDistance,greenBoxLeft,lineDistance,greenBoxRight,clrGreen,STYLE_DASH,1);
 
               }
+            printf("Furthest_away_point: "+Furthest_away_point+" greenBoxBottom:"+greenBoxBottom+" greenBoxTop:"+greenBoxTop+" MathAbs(greenBoxTop-Bid):"+MathAbs(greenBoxTop-Bid)+" MathAbs(greenBoxBottom-Bid):" +MathAbs(greenBoxBottom-Bid));
+
            }
-         //read greenboxtpname and if that is greater then big then make targetboxname "a|II_Logo_0_M1_DNZONE1" and vice versa
+
+         //read greenboxtpname and if that is greater then bid then make targetboxname "a|II_Logo_0_M1_DNZONE1" and vice versa
 
          //constatntly adjust the edges of the TP to match the edges of the box but not change the price location
          ObjectSetInteger(0, "greenBoxTPName", OBJPROP_TIME1, greenBoxLeft);
@@ -2425,15 +2493,15 @@ void OnTick()
 
                   // Create new red box over TargetBoxName
 
-                  RectangleCreate(0, "RedBox", 0, targetBoxLeft, targetBoxTop, greenBoxRight, targetBoxBottom, clrRed, 0, true, false, false);
-
+                  RectangleCreate(0, "RedBox", 0, targetBoxLeft, targetBoxTop, greenBoxRight, targetBoxBottom, clrRed, STYLE_SOLID, 1, true, true, true);
+                    
                   // Get description of green box
                   string greenBoxDesc = ObjectDescription(objectName);
 
                   // Set red box description to match green box
                   ObjectSetString(0, "RedBox", OBJPROP_TEXT, greenBoxDesc);
 
-                  // Change green box to transparent dashed line
+                  // Change green box to violet colour dashed line
                   ObjectSetInteger(0, objectName, OBJPROP_COLOR, clrViolet);
                   ObjectSetInteger(0, objectName, OBJPROP_BACK, false);
                   ObjectSetInteger(0, objectName, OBJPROP_FILL, false);
@@ -3286,7 +3354,7 @@ bool TextChange(const long   chart_ID=0,  // chart's ID
    if(!ObjectSetString(chart_ID,name,OBJPROP_TEXT,text))
      {
       Print(__FUNCTION__,
-            ": failed to change the text! Error code = ",ErrorDescription(GetLastError()));
+            ": failed to change the text! Error code = ",ErrorDescription(GetLastError())," Object name:",name);
       return(false);
      }
 //--- successful execution
@@ -4034,4 +4102,6 @@ void WriteFile(string name,string text)
    FileFlush(handlelog);
    FileClose(handlelog);
   }
+//+------------------------------------------------------------------+
+
 //+------------------------------------------------------------------+

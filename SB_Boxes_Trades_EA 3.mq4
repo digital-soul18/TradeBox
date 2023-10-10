@@ -826,8 +826,8 @@ void DeleteExcessGreenTPLines()
       for(int i=0; i<ObjectsTotal(); i++)
         {
          string objName = ObjectName(i);
-         // Check if object is a rectangle
-         if(ObjectGetInteger(0,objName,OBJPROP_TYPE) == OBJ_RECTANGLE && ObjectGetInteger(0, objName, OBJPROP_COLOR) == clrGreen)
+         // Check if object is a rectangle AND if colour is green or violet
+         if(ObjectGetInteger(0,objName,OBJPROP_TYPE) == OBJ_RECTANGLE && (ObjectGetInteger(0, objName, OBJPROP_COLOR) == clrGreen || ObjectGetInteger(0, objName, OBJPROP_COLOR) == clrViolet))
            {
             totalGreenBoxes++;
            }
@@ -1907,6 +1907,7 @@ void OnTick()
    datetime frontline;
    datetime middleofbox;
 
+   DeleteExcessGreenTPLines(); //delete the extra lines for showing the indicator
    CheckBoxes();  //Delete limit trades if Box is deleted or change its colour
    FindClosedTrades(); //Change closed trades box to blue and tp line to dashes
    DeleteTradeAfterBox(); //Delete Limit trades that is outside box
@@ -1914,7 +1915,7 @@ void OnTick()
    BoxMoved();       //Check if Box is moved
    SetPending2();  //Set second order trade
    ManageButtons(); //Manage the buttons for showing indicator
-   DeleteExcessGreenTPLines(); //delete the extra lines for showing the indicator
+
 
 //--- Bullish and Bearish engulfing pattern find
 
@@ -1975,7 +1976,17 @@ void OnTick()
                   entryprice1=upperline;
                   sl=lowerline;
                   stop_in_pips=(entryprice1-sl)/myPoint;
-                  tp=entryprice1+2*(entryprice1-sl);
+                  //check if TP for bluebox exists, replace
+                  if(ObjectFind("greenBoxTPName") != -1)
+                    {
+                     // Get V_Rectangle price
+                     double vRectPrice = ObjectGet("greenBoxTPName",OBJPROP_PRICE1);
+                     tp = vRectPrice;
+                     // Delete V_Rectangle
+                     ObjectDelete("greenBoxTPName");
+                    }
+                  else
+                     tp=entryprice1+2*(entryprice1-sl);
 
                  }
                else
@@ -1986,7 +1997,16 @@ void OnTick()
                      entryprice1=lowerline;
                      sl=upperline;
                      stop_in_pips=(sl-entryprice1)/myPoint;
-                     tp=entryprice1-2*(sl-entryprice1);
+                     if(ObjectFind("greenBoxTPName") != -1)
+                       {
+                        // Get V_Rectangle price
+                        double vRectPrice = ObjectGet("greenBoxTPName",OBJPROP_PRICE1);
+                        tp = vRectPrice;
+                        // Delete V_Rectangle
+                        ObjectDelete("greenBoxTPName");
+                       }
+                     else
+                        tp=entryprice1-2*(sl-entryprice1);
 
                     }
 
@@ -2015,17 +2035,7 @@ void OnTick()
                      //requires tp to be set from above.
                      DrawTL("vTP1_"+strname,tp,backline,tp,frontline,clrYellow,STYLE_DASH,1);
 
-                     //check if TP for bluebox exists, replace
-                     if(ObjectFind("greenBoxTPName") != -1)
-                       {
-                        // Get V_Rectangle price
-                        double vRectPrice = ObjectGet("greenBoxTPName",OBJPROP_PRICE1);
-                        ObjectSet("vTP1_"+strname,OBJPROP_PRICE1,vRectPrice);
-                        ObjectSet("vTP1_"+strname,OBJPROP_PRICE2,vRectPrice);
 
-                        // Delete V_Rectangle
-                        ObjectDelete("blueBoxTPName");
-                       }
                      //create a Infobox to be used to display the RvR and TP and SL amount.
                      TextCreate(0,"InfoBox_"+strname,0,time1,sl,infobox,"Ariel",9,clrYellow,0.0,ANCHOR_LEFT_UPPER);
 
@@ -2412,47 +2422,53 @@ void OnTick()
 
          //Determine the upper and lower line of the box by understandig which is the Min or max value.
          //if there is no greenbox TP line found then ...
-         if(ObjectFind("greenBoxTPName") == -1)
+         //Find the line which is the furthest away from the Bid
+         if(MathAbs(greenBoxTop-Bid) > MathAbs(greenBoxBottom-Bid))
            {
-            //Find the line which is the furthest away from the Bid
-            if(MathAbs(greenBoxTop-Bid) > MathAbs(greenBoxBottom-Bid))
+            Furthest_away_point = greenBoxTop;
+           }
+         else
+           {
+            Furthest_away_point = greenBoxBottom;
+           }
+
+         double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
+
+         //
+         if(Bid < Furthest_away_point)
+           {
+            //Target first supply zone it sees
+            TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
+
+            //create a TP line for the system to target
+            double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
+
+            if(ObjectFind("greenBoxTPName") == -1)
               {
-               Furthest_away_point = greenBoxTop;
-              }
-            else
-              {
-               Furthest_away_point = greenBoxBottom;
-              }
-
-            double greenBoxHeight = MathAbs(greenBoxTop - greenBoxBottom);
-
-            //
-            if(Bid < Furthest_away_point)
-              {
-               //Target first supply zone it sees
-               TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
-
-               //create a TP line for the system to target
-               double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
-
+               printf("draw TP1");
                DrawTL("greenBoxTPName",lineDistance,greenBoxLeft,lineDistance,greenBoxRight,clrGreen,STYLE_DASH,1);
-
               }
-
-            if(Bid > Furthest_away_point)
-              {
-               //Target first demand zone it sees
-               TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
-
-               //create a TP line for the system to target
-               double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
-
-               DrawTL("greenBoxTPName",lineDistance,greenBoxLeft,lineDistance,greenBoxRight,clrGreen,STYLE_DASH,1);
-
-              }
-            printf("Furthest_away_point: "+Furthest_away_point+" greenBoxBottom:"+greenBoxBottom+" greenBoxTop:"+greenBoxTop+" MathAbs(greenBoxTop-Bid):"+MathAbs(greenBoxTop-Bid)+" MathAbs(greenBoxBottom-Bid):" +MathAbs(greenBoxBottom-Bid));
 
            }
+
+         if(Bid > Furthest_away_point)
+           {
+            //Target first demand zone it sees
+            TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
+
+            //create a TP line for the system to target
+            double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
+
+            if(ObjectFind("greenBoxTPName") == -1)
+              {
+               printf("draw TP2");
+               DrawTL("greenBoxTPName",lineDistance,greenBoxLeft,lineDistance,greenBoxRight,clrGreen,STYLE_DASH,1);
+              }
+
+           }
+         printf("Furthest_away_point: "+Furthest_away_point+" greenBoxBottom:"+greenBoxBottom+" greenBoxTop:"+greenBoxTop+" MathAbs(greenBoxTop-Bid):"+MathAbs(greenBoxTop-Bid)+" MathAbs(greenBoxBottom-Bid):" +MathAbs(greenBoxBottom-Bid));
+
+
 
          //read greenboxtpname and if that is greater then bid then make targetboxname "a|II_Logo_0_M1_DNZONE1" and vice versa
 
@@ -2469,16 +2485,18 @@ void OnTick()
             if(innerObjectName == TargetBoxName)
               {
                // Get coordinates of TargetBoxName
-
+               printf(innerObjectName);
                double targetBoxLeft = ObjectGet(innerObjectName, OBJPROP_TIME1);
                double targetBoxTop = ObjectGet(innerObjectName, OBJPROP_PRICE1);
                double targetBoxRight = ObjectGet(innerObjectName, OBJPROP_TIME2);
                double targetBoxBottom = ObjectGet(innerObjectName, OBJPROP_PRICE2);
                double spread = MarketInfo(Symbol(), MODE_SPREAD);
 
-               printf("Height "+MathAbs(targetBoxTop - targetBoxBottom)/myPoint);
+               /*
+               printf("Height "+MathAbs(targetBoxTop - targetBoxBottom)/Point);
                printf("TargetBoxName "+TargetBoxName);
-               printf("spread"+(Ask-Bid));
+               printf("spread"+spread);
+               */
 
                // Check if TargetBoxName is within green box
                if(targetBoxLeft >= greenBoxLeft &&
@@ -2494,7 +2512,7 @@ void OnTick()
                   // Create new red box over TargetBoxName
 
                   RectangleCreate(0, "RedBox", 0, targetBoxLeft, targetBoxTop, greenBoxRight, targetBoxBottom, clrRed, STYLE_SOLID, 1, true, true, true);
-                    
+
                   // Get description of green box
                   string greenBoxDesc = ObjectDescription(objectName);
 

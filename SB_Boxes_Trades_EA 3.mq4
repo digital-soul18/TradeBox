@@ -932,7 +932,7 @@ void CheckBoxes()
                     }
 
                   //Delete all the TP lines since they are no longer needed
-                  ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
+                  //ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vOP2_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
                   ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
@@ -989,7 +989,7 @@ void FindClosedTrades()
                     {
                      DeletePending2(str2);
                     }
-                  ObjectDelete("vvOP2_"+IntegerToString(orderticket));
+                  //ObjectDelete("vvOP2_"+IntegerToString(orderticket));
                   ObjectDelete("vOP2_"+IntegerToString(orderticket));
                   //ObjectDelete("vTP2_"+IntegerToString(orderticket));  //Keep the TP2
                   ObjectDelete("vSL2_"+IntegerToString(orderticket));
@@ -1009,7 +1009,7 @@ void FindClosedTrades()
 
                   if(allowed_2nd_trade)
                     {
-                     ObjectDelete("vvOP2_"+IntegerToString(orderticket));
+                     //ObjectDelete("vvOP2_"+IntegerToString(orderticket));
                      ObjectDelete("vOP2_"+IntegerToString(orderticket));
                      ObjectDelete("vSL2_"+IntegerToString(orderticket));
                     }
@@ -1118,7 +1118,7 @@ void DeleteTradeAfterBox()
                  }
 
                // Delete trade objects
-               ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
+               //ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vOP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
                ObjectDelete("vSL2_"+IntegerToString(OrderTicket()));
@@ -1219,10 +1219,10 @@ void BoxMoved()
                         ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+upperline-lowerline);
                         ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
                         ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
-                        ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline+upperline-lowerline);
-                        ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+upperline-lowerline);
-                        ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
-                        ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                        //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline+upperline-lowerline);
+                        //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline+upperline-lowerline);
+                        //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                        //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
                         ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,upperline-0.5*(upperline-lowerline));
                         ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,upperline-0.5*(upperline-lowerline));
                         ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
@@ -1296,10 +1296,10 @@ void BoxMoved()
                            ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,lowerline-(upperline-lowerline));
                            ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
                            ObjectSet("vOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
-                           ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,lowerline-(upperline-lowerline));
-                           ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,lowerline-(upperline-lowerline));
-                           ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
-                           ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
+                           //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,lowerline-(upperline-lowerline));
+                           //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,lowerline-(upperline-lowerline));
+                           //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
+                           //ObjectSet("vvOP2_"+IntegerToString(OrderTicket()),OBJPROP_TIME2,MathMax(time1,time2));
                            ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE1,lowerline-0.5*(lowerline-upperline));
                            ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_PRICE2,lowerline-0.5*(lowerline-upperline));
                            ObjectSet("vSL2_"+IntegerToString(OrderTicket()),OBJPROP_TIME1,MathMin(time1,time2));
@@ -1528,7 +1528,7 @@ void BoxMoved()
      }
   }
 //+------------------------------------------------------------------+
-//|                                                                  |
+//| Once the first box trade order is filled with order then this checks and enters a second trade
 //+------------------------------------------------------------------+
 void SetPending2()
   {
@@ -1537,6 +1537,7 @@ void SetPending2()
       int i;
       for(i=OrdersTotal()-1; i>=0; i--)
         {
+         //Skim through all all open orders to find any open that could be elgible for 2nd trade
          if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES)==True)
            {
             int orderticket=OrderTicket();
@@ -1547,40 +1548,57 @@ void SetPending2()
             double orderlots=OrderLots();
             int cmd=-1;
 
-            //Read prices off the indicators on the chart
-            double price=ObjectGet("vvOP2_"+IntegerToString(orderticket),OBJPROP_PRICE1);
-            double sl=ObjectGet("vSL2_"+IntegerToString(orderticket),OBJPROP_PRICE1);
-            double tp=ObjectGet("vTP2_"+IntegerToString(orderticket),OBJPROP_PRICE1);
+            //Check if the order is for the same symbol, same EA by checking magic number, ordertype is either a BUY or SELL only (no stop or limit orders) and has a comment which starts with T01_
             if(ordersymbol==Symbol() && ordermagic==magic_number && ordertype<=1 && StringFind(ordercomment,"T01_")!=-1)
               {
-               if(ObjectFind("vvOP2_"+IntegerToString(orderticket))!=-1)
+              //Check if the second trade order entry price line exists on the chart
+               if(ObjectFind("vOP2_"+IntegerToString(orderticket))!=-1)
                  {
+                  //Read prices off the drawn lines on the chart
+                  double second_trade_price=ObjectGet("vOP2_"+IntegerToString(orderticket),OBJPROP_PRICE1);
+                  double second_trade_sl=ObjectGet("vSL2_"+IntegerToString(orderticket),OBJPROP_PRICE1);
+                  double second_trade_tp=ObjectGet("vTP2_"+IntegerToString(orderticket),OBJPROP_PRICE1);
+                  
+                  //If the original order is OP_BUY then the second trade will be a BUYSTOP and vice versa
                   if(ordertype==OP_BUY)
                      cmd=OP_BUYSTOP;
                   else
                      if(ordertype==OP_SELL)
                         cmd=OP_SELLSTOP;
+                        
                   string strname;
+                  
+                  //From the ordercomment extract out all the ...?
                   string str1=StringSubstr(ordercomment,0,StringFind(ordercomment,"_"+TradeCode));
                   string str2=StringSubstr(str1,StringFind(str1,"_")+1);
                   strname=str2;
+                  
+                  //Extract the itme of the original box order trades
                   datetime time1=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME1)));
                   datetime time2=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME2)));
+                  
+                  //Find the beginning and end line
                   datetime frontline=MathMax(time1,time2);
                   datetime backline=MathMin(time1,time2);
+                 
                   Print("SecondTrigger");
-                  int openticket=Open_Trade(Symbol(),cmd,price,orderlots,sl,tp,"T02_"+strname+"_"+TradeCode);
-                  //what is this below?
+                  
+                  //Create a new order second trade order. Will be a STOP order in the same diretion as original trade with the SL, TP set by the drawn lines on the chart
+                  int openticket=Open_Trade(Symbol(),cmd,second_trade_price,orderlots,second_trade_sl,second_trade_tp,"T02_"+strname+"_"+TradeCode);
+                  
+                  //once the trade has been entered then delete the original lines and replace with another set so it doesn't keep looping 
                   if(openticket>0)
                     {
-                     ObjectDelete("vvOP2_"+IntegerToString(orderticket));
+                     Print("delete trigger");
+                     //ObjectDelete("vvOP2_"+IntegerToString(orderticket));
+                     //Delete these pending lines to be replaced with new
                      ObjectDelete("vOP2_"+IntegerToString(orderticket));
-                     //ObjectDelete("vTP1_"+IntegerToString(orderticket)); //Don't delete this from here otherwise the SL TL lines wont work.
                      ObjectDelete("vTP2_"+IntegerToString(orderticket));
                      ObjectDelete("vSL2_"+IntegerToString(orderticket));
-                     DrawTL("vOP2_"+IntegerToString(openticket),price,backline,price,frontline,clrGreen,STYLE_SOLID,1);
-                     DrawTL("vSL2_"+IntegerToString(openticket),sl,backline,sl,frontline,clrGray,STYLE_SOLID,1);
-                     DrawTL("vTP2_"+IntegerToString(openticket),tp,backline,tp,frontline,clrBrown,STYLE_SOLID,2);
+                     //These lines replace existing ones to stop the loop from executing.
+                     DrawTL("vOP2_livetrade_"+IntegerToString(openticket),second_trade_price,backline,second_trade_price,frontline,clrGreen,STYLE_SOLID,1);
+                     DrawTL("vSL2_livetrade_"+IntegerToString(openticket),second_trade_sl,backline,second_trade_sl,frontline,clrGray,STYLE_SOLID,1);
+                     DrawTL("vTP2_livetrade_"+IntegerToString(openticket),second_trade_tp,backline,second_trade_tp,frontline,clrBrown,STYLE_SOLID,2);
 
                     }
 
@@ -1690,7 +1708,7 @@ void DeletePending2(string strcomment)
                      ObjectDelete("vSL2_"+IntegerToString(OrderTicket()));
                      ObjectDelete("vTP1_"+IntegerToString(OrderTicket()));
                      ObjectDelete("vTP2_"+IntegerToString(OrderTicket()));
-                     ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
+                     //ObjectDelete("vvOP2_"+IntegerToString(OrderTicket()));
                      ObjectDelete("Link_"+IntegerToString(OrderTicket()));
                      ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_WIDTH,1);
                      ObjectSet("vTP2_"+IntegerToString(OrderTicket()),OBJPROP_STYLE,STYLE_DASH);
@@ -2195,7 +2213,7 @@ void OnTick()
                         //Trade entry for second trade
                         DrawTL("vOP2_"+IntegerToString(openticket1),entryprice2,backline,entryprice2,frontline,clrGreen,STYLE_SOLID,1);
                         //Not sure what this does TBH.
-                        DrawTL("vvOP2_"+IntegerToString(openticket1),entryprice2,backline,entryprice2,frontline,clrNONE,STYLE_SOLID,1);
+                        //DrawTL("vvOP2_"+IntegerToString(openticket1),entryprice2,backline,entryprice2,frontline,clrNONE,STYLE_SOLID,1);
                         //Stop loss of second trade
                         DrawTL("vSL2_"+IntegerToString(openticket1),stoploss2,backline,stoploss2,frontline,clrBrown,STYLE_SOLID,2);
                         //Take profit of second trade
@@ -2301,7 +2319,7 @@ void OnTick()
          // Object is green
 
          //initiaize the 1M chart
-         CurrentSupDem=iCustom(Symbol(),PERIOD_M1,"II_SupDemMOD_DarkBG_SolidFill_Sow",
+         CurrentSupDem=iCustom(Symbol(),PERIOD_M5,"II_SupDemMOD_DarkBG_SolidFill_Sow",
                                //---- iCustom values ---
                                // ENUM_TIMEFRAMES forced_tf=
                                PERIOD_CURRENT,
@@ -2438,7 +2456,7 @@ void OnTick()
          if(Bid < Furthest_away_point)
            {
             //Target first supply zone it sees
-            TargetBoxName = "a|II_Logo_0_M1_UPZONE1";
+            TargetBoxName = "a|II_Logo_0_M5_UPZONE1";
 
             //create a TP line for the system to target
             double lineDistance = greenBoxBottom - (greenBoxHeight * 2);
@@ -2454,7 +2472,7 @@ void OnTick()
          if(Bid > Furthest_away_point)
            {
             //Target first demand zone it sees
-            TargetBoxName = "a|II_Logo_0_M1_DNZONE1";
+            TargetBoxName = "a|II_Logo_0_M5_DNZONE1";
 
             //create a TP line for the system to target
             double lineDistance = greenBoxBottom + (greenBoxHeight * 2);
@@ -2466,7 +2484,7 @@ void OnTick()
               }
 
            }
-         printf("Furthest_away_point: "+Furthest_away_point+" greenBoxBottom:"+greenBoxBottom+" greenBoxTop:"+greenBoxTop+" MathAbs(greenBoxTop-Bid):"+MathAbs(greenBoxTop-Bid)+" MathAbs(greenBoxBottom-Bid):" +MathAbs(greenBoxBottom-Bid));
+         //printf("Furthest_away_point: "+Furthest_away_point+" greenBoxBottom:"+greenBoxBottom+" greenBoxTop:"+greenBoxTop+" MathAbs(greenBoxTop-Bid):"+MathAbs(greenBoxTop-Bid)+" MathAbs(greenBoxBottom-Bid):" +MathAbs(greenBoxBottom-Bid));
 
 
 

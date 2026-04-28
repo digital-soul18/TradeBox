@@ -208,7 +208,7 @@ int        digit_lot;
 
 //Variables for candleIdentifier
 double _bar1size;                // local variable required to avoid a flat market
-datetime timeBUOVB_BEOVB=NULL;   // time of a bar when pattern orders were opened, to avoid re-opening
+datetime timeBUOVB_BEOVB=0;       // time of a bar when pattern orders were opened, to avoid re-opening
 string CandleFinder,arrayOut[17];
 int SupplyLevelCounter,DemandLevelCounter,ZZLevelCounter;
 
@@ -1087,8 +1087,8 @@ void DeleteTradeAfterBox()
             string str2=StringSubstr(str1,StringFind(str1,"_")+1);
 
             // Convert trade code strings to datetimes
-            datetime time1=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME1)));
-            datetime time2=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME2)));
+            datetime time1=GetRectTime(str2,OBJPROP_TIME1);
+            datetime time2=GetRectTime(str2,OBJPROP_TIME2);
             datetime timex=MathMax(time1,time2);
 
             // Check if current time past trade expiry
@@ -1192,8 +1192,8 @@ void BoxMoved()
             double price2=NormalizeDouble(GetRectPrice(str2,OBJPROP_PRICE2),Digits);
             double upperline=MathMax(price1,price2);
             double lowerline=MathMin(price1,price2);
-            datetime time1=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME1)));
-            datetime time2=StrToInteger(DoubleToString(GetRectTime(str2,OBJPROP_TIME2)));
+            datetime time1=GetRectTime(str2,OBJPROP_TIME1);
+            datetime time2=GetRectTime(str2,OBJPROP_TIME2);
             color boxColor=ObjectGet(str2,OBJPROP_COLOR);
             int ret=0;
 
@@ -1498,7 +1498,7 @@ void BoxMoved()
             string infobox;
 
             //Check if TP line is above the box to check if this is a buy order
-            if(tpprice!= NULL && tpprice > upperline)
+            if(tpprice != 0 && tpprice > upperline)
               {
 
                //Calculcate the various TP,Stop and RvR
@@ -1509,7 +1509,7 @@ void BoxMoved()
             else
 
                //Check if TP line is below the box to check if this is a sell order
-               if(tpprice!= NULL && tpprice < lowerline)
+               if(tpprice != 0 && tpprice < lowerline)
                  {
                   tp_in_pips=NormalizeDouble((lowerline-tpprice)/myPoint,Digits);
                   stop_in_pips=NormalizeDouble((upperline-lowerline)/myPoint,Digits);
@@ -1574,8 +1574,8 @@ void SetPending2()
                   strname=str2;
                   
                   //Extract the itme of the original box order trades
-                  datetime time1=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME1)));
-                  datetime time2=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME2)));
+                  datetime time1=GetRectTime(strname,OBJPROP_TIME1);
+                  datetime time2=GetRectTime(strname,OBJPROP_TIME2);
                   
                   //Find the beginning and end line
                   datetime frontline=MathMax(time1,time2);
@@ -1654,7 +1654,7 @@ void SetPending2()
 int OrderFind(string OrderCommentry)
   {
    int i;
-   int orderID;
+   int orderID=0;
    for(i=OrdersTotal()-1; i>=0; i--)
      {
       if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES)==True)
@@ -1669,13 +1669,13 @@ int OrderFind(string OrderCommentry)
            }
         }
      }
-   if(orderID!=NULL)
+   if(orderID!=0)
      {
       return(orderID);
      }
    else
      {
-      return(NULL);
+      return(0);
      }
   }
 
@@ -1733,7 +1733,7 @@ string CandleIdentifier(string SymbolCheck,
                         color HighTFLevelColour,//If this is a High TF then add a background of the following.
                         string &outArray[17])
   {
-   string result=NULL;
+   string result="";
 
 //--- define prices of necessary bars
    double open_1        = NormalizeDouble(iOpen(SymbolCheck, PeriodCheck, FirstCandlePosition), Digits);
@@ -1758,7 +1758,7 @@ string CandleIdentifier(string SymbolCheck,
    double bar_midpoint=MathAbs(open_1-close_1)/2+MathMin(open_1,close_1);
 
    bool SetAsBack; // used to make backgrounds hollow for High TF levels
-   if(HighTFLevelColour!=NULL)
+   if(HighTFLevelColour!=clrNONE)
       SetAsBack=false;
    else
       SetAsBack=true; //if HighTF color set then make it hollow.
@@ -1776,7 +1776,7 @@ string CandleIdentifier(string SymbolCheck,
 //&& _minZoneThickness > minZoneThickness //thickness of bar 2 must be above minimum threshold
    )
      {
-      if(result==NULL)
+      if(result=="")
         {
          result="Bullish_Engulfing";
          //Print(_minZoneThickness);
@@ -1819,7 +1819,7 @@ string CandleIdentifier(string SymbolCheck,
       */
    )
      {
-      if(result==NULL)
+      if(result=="")
         {
          result="Bearish_Engulfing";
          //Print(_minZoneThickness);
@@ -1844,13 +1844,13 @@ string CandleIdentifier(string SymbolCheck,
 
 //Print(timeBUOVB_BEOVB);
 //--- output the result
-   if(result!=NULL)
+   if(result!="")
      {
       //Output the full data set of the find into a array.
       //outArray 1 - Name of symbol
       outArray[1]=result;
       //outArray 2 - Period
-      outArray[2]=PeriodCheck;
+      outArray[2]=IntegerToString(PeriodCheck);
       //outArray 3 - Open 1
       outArray[3]=DoubleToStr(open_1);
       //outArray 4 - Open 2
@@ -1872,7 +1872,7 @@ string CandleIdentifier(string SymbolCheck,
      }
    else
      {
-      return(NULL);
+      return("");
 
      }
   }
@@ -1964,8 +1964,8 @@ void OnTick()
                double price2=GetRectPrice(strname,OBJPROP_PRICE2);
 
                //Find the box and the left side of the box is determined as time1 and the right side of the box is time2
-               datetime time1=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME1)));
-               datetime time2=StrToInteger(DoubleToString(GetRectTime(strname,OBJPROP_TIME2)));
+               datetime time1=GetRectTime(strname,OBJPROP_TIME1);
+               datetime time2=GetRectTime(strname,OBJPROP_TIME2);
 
                //Determine the upper and lower line of the box by understandig which is the Min or max value
                upperline=MathMax(price1,price2);
@@ -2433,10 +2433,10 @@ void OnTick()
                               );
 
          // Get coordinates
-         double greenBoxLeft = ObjectGet(objectName, OBJPROP_TIME1);
-         double greenBoxTop = ObjectGet(objectName, OBJPROP_PRICE1);
-         double greenBoxRight = ObjectGet(objectName, OBJPROP_TIME2);
-         double greenBoxBottom = ObjectGet(objectName, OBJPROP_PRICE2);
+         datetime greenBoxLeft  = (datetime)ObjectGetInteger(0, objectName, OBJPROP_TIME1);
+         double   greenBoxTop   = ObjectGet(objectName, OBJPROP_PRICE1);
+         datetime greenBoxRight = (datetime)ObjectGetInteger(0, objectName, OBJPROP_TIME2);
+         double   greenBoxBottom= ObjectGet(objectName, OBJPROP_PRICE2);
 
          //Determine the upper and lower line of the box by understandig which is the Min or max value.
          //if there is no greenbox TP line found then ...
@@ -2504,10 +2504,10 @@ void OnTick()
               {
                // Get coordinates of TargetBoxName
                printf(innerObjectName);
-               double targetBoxLeft = ObjectGet(innerObjectName, OBJPROP_TIME1);
-               double targetBoxTop = ObjectGet(innerObjectName, OBJPROP_PRICE1);
-               double targetBoxRight = ObjectGet(innerObjectName, OBJPROP_TIME2);
-               double targetBoxBottom = ObjectGet(innerObjectName, OBJPROP_PRICE2);
+               datetime targetBoxLeft   = (datetime)ObjectGetInteger(0, innerObjectName, OBJPROP_TIME1);
+               double   targetBoxTop    = ObjectGet(innerObjectName, OBJPROP_PRICE1);
+               datetime targetBoxRight  = (datetime)ObjectGetInteger(0, innerObjectName, OBJPROP_TIME2);
+               double   targetBoxBottom = ObjectGet(innerObjectName, OBJPROP_PRICE2);
                double spread = MarketInfo(Symbol(), MODE_SPREAD);
 
                /*
@@ -2712,7 +2712,7 @@ void CleanAbsorbedLevels(string SymbolCheck,
                   FullPenetrationCounter++;
                  }
 
-               TextChange(0,"Txt_"+LevelPrefix+IntegerToString(i),PartialPenetrationCounter+FullPenetrationCounter);
+               TextChange(0,"Txt_"+LevelPrefix+IntegerToString(i),IntegerToString(PartialPenetrationCounter+FullPenetrationCounter));
                if(!ObjectSetText(LevelPrefix+IntegerToString(i),"Counter:"+IntegerToString(PartialPenetrationCounter)+" Full Penetration:"+IntegerToString(FullPenetrationCounter)))
                   Print("crap");
                AllPenetrationsCount=FullPenetrationCounter+PartialPenetrationCounter;
@@ -3063,7 +3063,7 @@ int CloseTrades(int direction)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss, double EntryPrice = NULL)
+bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss, double EntryPrice = 0)
   {
    int try;
    string strerr="";
@@ -3074,11 +3074,11 @@ bool ModifyProfitTarget(int myTicket,double ProfitTarget,double StopLoss, double
       return(false);
 
 //If either SL or TP not set then set as their original amounts
-   if(ProfitTarget==NULL || ProfitTarget=="")
+   if(ProfitTarget==0)
       ProfitTarget = OrderTakeProfit();
-   if(StopLoss==NULL || StopLoss=="")
+   if(StopLoss==0)
       StopLoss = OrderStopLoss();
-   if(EntryPrice==NULL || EntryPrice=="")
+   if(EntryPrice==0)
       EntryPrice = OrderOpenPrice();
 
 
@@ -3262,12 +3262,12 @@ double GetRectPrice(string name,ENUM_OBJECT_PROPERTY_DOUBLE type)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double GetRectTime(string name,ENUM_OBJECT_PROPERTY_INTEGER type)
+datetime GetRectTime(string name,ENUM_OBJECT_PROPERTY_INTEGER type)
   {
    if(ObjectFind(name)==-1)
       return(-1);
    else
-      return(ObjectGet(name,type));
+      return((datetime)ObjectGetInteger(0,name,type));
   }
 //+------------------------------------------------------------------+
 //|                                                                  |

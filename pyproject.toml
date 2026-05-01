@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "trading-system"
+version = "0.1.0"
+description = "Supply & Demand algorithmic trading system — MHI, MGC, MCL futures"
+authors = ["Sowrabh <sowrabh@digital-soul.com.au>"]
+packages = [{include = "trading_system"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+# Broker connectivity
+ib-insync = "^0.9.86"
+
+# Web framework and real-time
+fastapi = "^0.111"
+uvicorn = {extras = ["standard"], version = "^0.30"}
+websockets = "^12.0"
+
+# Dashboard
+streamlit = "^1.35"
+plotly = "^5.22"
+
+# Chart rendering for LLM
+mplfinance = "^0.12"
+matplotlib = "^3.9"
+pillow = "^10.3"
+
+# LLM / Agents
+anthropic = "^0.28"
+
+# Data
+pandas = "^2.2"
+numpy = "^1.26"
+sqlalchemy = "^2.0"
+alembic = "^1.13"
+psycopg2-binary = "^2.9"
+redis = "^5.0"
+
+# Settings and utilities
+pydantic = "^2.7"
+pydantic-settings = "^2.3"
+loguru = "^0.7"
+python-dotenv = "^1.0"
+httpx = "^0.27"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2"
+pytest-asyncio = "^0.23"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["trading_system/tests"]

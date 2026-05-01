@@ -1,57 +1,27 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.env
 
-# Folder config file
-Desktop.ini
+# IDE
+.vscode/
+.idea/
+*.swp
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# Project
+chart_debug.png
+*.log
 
-# Windows shortcuts
-*.lnk
-
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-mqlcache.dat
-MACD Sample.ex4
-MACD Sample.mq4
-Moving Average.ex4
-Moving Average.mq4
-SB_Boxes_Trades_EA 2.ex4
-SB_Boxes_Trades_EA 2.mq4
-SB_Boxes_Trades_EAv1.ex4
-SB_Boxes_Trades_EA.mq4
-SB_Boxes_Trades_EA.ex4
+# Alembic
+trading_system/database/migrations/versions/*.pyc

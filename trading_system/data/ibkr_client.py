@@ -3,6 +3,14 @@ from __future__ import annotations
 import asyncio
 from typing import Optional
 
+# eventkit (ib_insync dependency) captures asyncio.get_event_loop() at module import time.
+# Python 3.10+ raises RuntimeError in non-main threads with no loop set (e.g. Streamlit's
+# ScriptRunner.scriptThread). Create one before ib_insync is imported.
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
 from loguru import logger
 
 from trading_system.config.settings import settings
@@ -31,8 +39,12 @@ class IBKRClient:
         self._setup_callbacks()
 
     def _setup_callbacks(self) -> None:
-        self.ib.disconnectedEvent += self._on_disconnect
-        self.ib.errorEvent += self._on_error
+        # Store bound methods as instance attributes so ib_insync's weakref tracking
+        # doesn't GC them (bound methods are temporary objects otherwise).
+        self._disconnect_cb = self._on_disconnect
+        self._error_cb = self._on_error
+        self.ib.disconnectedEvent += self._disconnect_cb
+        self.ib.errorEvent += self._error_cb
 
     def _on_disconnect(self) -> None:
         logger.warning("IBKR disconnected — scheduling reconnect")
@@ -42,11 +54,11 @@ class IBKRClient:
     def _on_error(
         self, req_id: int, error_code: int, error_string: str, contract
     ) -> None:
+        # 2100-2199: informational data-farm status messages (not errors)
+        if 2100 <= error_code <= 2199:
+            logger.info(f"IBKR info {error_code}: {error_string}")
         # 1100/1300: connection lost (expected on TWS restart)
-        # 1102: connection restored by TWS
-        # 502: cannot connect to TWS
-        # 10197: no security definition found
-        if error_code in (1100, 1300):
+        elif error_code in (1100, 1300):
             logger.warning(f"IBKR error {error_code}: {error_string}")
         elif error_code == 1102:
             logger.info("IBKR connection restored by TWS")
